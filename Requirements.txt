@@ -1,0 +1,38 @@
+Admin Panel
+
+----------Login 
+----------Logout
+Dashboard 
+Profile Update 
+Password Update
+Donor Details
+Transactions Details
+Donation Details
+
+User Panel
+
+----------SignUp
+----------Login
+----------Logout
+----------Dashboard
+Profile Update 
+Password Update
+Donation Details
+Transation details
+
+Frontend
+
+----------Form Layout 
+Form Validations
+Daily|Weekly|Monthly form data submission
+Friday form data submission
+Ramadan form data submission
+Strip card validation
+
+Strip 
+
+-----------Strip integration for transactions 
+Transactions on there times
+
+
+
