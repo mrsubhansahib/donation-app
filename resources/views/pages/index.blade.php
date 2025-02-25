@@ -19,9 +19,9 @@
     <p>Browse our donation form to find a starting point.</p>
   </div>
   <div class="container mt-5 d-flex justify-content-around">
-    <button onclick="window.location.href='{{URL::to('/donation/regular')}}';">Daily | Weekly | Monthly  Donation</button>
-    <button style="padding: 15px 90px;" onclick="window.location.href='{{URL::to('/donation/friday')}}';">Friday  Giving</button>
-    <button style="padding: 15px 90px;" onclick="window.location.href='{{URL::to('/donation/ramadan')}}';">Ramadan Giving </button>
+    <button style="padding: 15px 90px;" onclick="window.location.href='{{URL::to('/donation/regular')}}';">Daily | Weekly | Monthly  Donation</button>
+    {{-- <button style="padding: 15px 90px;" onclick="window.location.href='{{URL::to('/donation/friday')}}';">Friday  Giving</button> --}}
+    {{-- <button style="padding: 15px 90px;" onclick="window.location.href='{{URL::to('/donation/ramadan')}}';">Ramadan Giving </button> --}}
     
   </div>
 
