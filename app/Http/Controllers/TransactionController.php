@@ -2,18 +2,21 @@
 
 namespace App\Http\Controllers;
 
+use App\Transaction;
+use App\User;
 use Illuminate\Http\Request;
 
 class TransactionController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Display a listing of the transactions.
      *
      * @return \Illuminate\Http\Response
      */
     public function index()
-    {
-        //
+{
+            $transactions = Transaction::with('user', 'donation')->get();
+        return view('pages.admin.transactions-index', compact('transactions'));
     }
 
     /**
@@ -38,14 +41,16 @@ class TransactionController extends Controller
     }
 
     /**
-     * Display the specified resource.
+     * Display the specified user's transection.
      *
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show($user_id)
     {
-        //
+        $user = User::findOrFail($user_id);
+        $transactions = Transaction::where('user_id', $user_id)->with('donation')->get();
+        return view('pages.admin.transactions-show', compact('user', 'transactions'));
     }
 
     /**

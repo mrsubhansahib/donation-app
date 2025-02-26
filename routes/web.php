@@ -1,8 +1,11 @@
 <?php
-
+// use App\Http\Controllers\Admin\TransactionController as AdminController;
+use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DonationController;
 use App\Http\Controllers\StripePaymentController;
+use App\Http\Controllers\TransactionController;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
 
@@ -37,6 +40,21 @@ Route::prefix('auth')->group(function () {
     Route::post('login-attempt', [AuthController::class, 'login'])->name('login-attempt');
 });
 
+
+
+
+Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
+    Route::get('/transactions', [AdminController::class, 'index'])->name('admin.transactions.index');
+    Route::get('/transactions/{user_id}', [AdminController::class, 'show'])->name('admin.transactions.show');
+});
+
+// User Routes - Only Accessible by Authenticated Users
+Route::middleware(['auth'])->prefix('user')->group(function () {
+    Route::get('/transactions', [UserController::class, 'index'])->name('user.transactions.index');
+});
+
+
+
 Route::group(['prefix' => 'donation'], function () {
     Route::get('/regular', function () {
         return view('pages.donation.regular-donation');
@@ -51,6 +69,10 @@ Route::group(['prefix' => 'donation'], function () {
     });
     Route::post('/ramadan', [DonationController::class, 'ramadan_donation'])->name('ramadan.donation');
 }); 
+
+
+
+
 // Authenticated routes (require auth middleware)
 Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', [AuthController::class, 'dashboard'])->name('dashboard');
@@ -61,6 +83,12 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/show', [DonationController::class, 'show_donation'])->name('donations.show');
        });
 });
+
+
+
+
+
+
 
 Route::group(['prefix' => 'email'], function () {
     Route::get('inbox', function () {

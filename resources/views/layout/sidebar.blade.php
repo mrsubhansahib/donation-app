@@ -19,7 +19,7 @@
         </a>
       </li>
       <li class="nav-item {{ active_class(['/donations']) }}">
-        <a href="{{ route('donations.show') }}" class="nav-link">
+        <a href="{{ route('admin.transactions.index') }}" class="nav-link">
           <i class="link-icon" data-feather="pocket"></i>
           <span class="link-title">Donations</span>
         </a>

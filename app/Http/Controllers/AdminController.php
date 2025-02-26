@@ -3,22 +3,20 @@
 namespace App\Http\Controllers;
 
 use App\Transaction;
-use Auth;
 use Illuminate\Http\Request;
 
-class UserController extends Controller
+class AdminController extends Controller
 {
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
+    // Show all transactions to the admin
     public function index()
     {
-        $user = Auth::user();
-        $transactions = Transaction::where('user_id', $user->id)->with('donation')->latest()->get();
-
-        return view('pages.user.transactions-index', compact('transactions'));
+        $transactions = Transaction::with('user', 'donation')->latest()->get();
+        return view('pages.admin.transactions-index', compact('transactions'));
     }
 
     /**
@@ -48,9 +46,13 @@ class UserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    // Show all transactions for a specific user
+    public function show($user_id)
     {
-        //
+        $user = User::findOrFail($user_id);
+        $transactions = Transaction::where('user_id', $user_id)->with('donation')->get();
+        
+        return view('pages.admin.transactions-show', compact('user', 'transactions'));
     }
 
     /**
