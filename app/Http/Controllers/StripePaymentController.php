@@ -137,7 +137,7 @@ class StripePaymentController extends Controller
             'customer' => $customer->id,
             'items' => [['price' => $price->id]],
             'trial_end' => $startTimestamp, // Delays the charge until the start date
-            'cancel_at' => $cancelAt,
+            // 'cancel_at' => $cancelAt,
         ]);
         Auth::login($user);
         return redirect()->route('dashboard')->with('success', 'Donation successfully registered');

@@ -18,10 +18,16 @@
           <span class="link-title">Dashboard</span>
         </a>
       </li>
-      <li class="nav-item {{ active_class(['/donations']) }}">
-        <a href="{{ route('admin.transactions.index') }}" class="nav-link">
+      {{-- <li class="nav-item {{ active_class(['/donations']) }}">
+        <a href="" class="nav-link">
           <i class="link-icon" data-feather="pocket"></i>
           <span class="link-title">Donations</span>
+        </a>
+      </li> --}}
+      <li class="nav-item {{ active_class(['/transactions']) }}">
+        <a href="{{ route('admin.transactions.index') }}" class="nav-link">
+          <i class="link-icon" data-feather="pocket"></i>
+          <span class="link-title">Transactions</span>
         </a>
       </li>
       {{-- <li class="nav-item nav-category">web apps</li>
