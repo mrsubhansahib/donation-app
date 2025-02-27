@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('stripe_payment_id')->unique(); // Stripe charge ID
             $table->decimal('amount', 10, 2); // Payment amount
             $table->string('currency', 3);
+            $table->string('type');
             $table->string('status'); // Paid, Failed, Refunded
             $table->timestamp('paid_at');
             $table->timestamps();

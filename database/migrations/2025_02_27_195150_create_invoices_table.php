@@ -18,6 +18,8 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained()->onDelete('cascade'); // Link to users
             $table->string('stripe_invoice_id')->unique(); // Stripe invoice ID
             $table->string('stripe_subscription_id'); // Stripe invoice ID
+            $table->string('currency');
+            $table->string('type');
             $table->decimal('amount_due', 10, 2);
             $table->decimal('amount_paid', 10, 2)->nullable();
             $table->string('status'); // Paid, Open, Draft

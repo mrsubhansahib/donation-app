@@ -18,6 +18,9 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained()->onDelete('cascade'); // Link to users
             $table->string('stripe_subscription_id')->unique(); // Stripe subscription ID
             $table->string('stripe_price_id'); // The Stripe price ID for this subscription
+            $table->string('price');
+            $table->string('currency');
+            $table->string('type');
             $table->string('status')->default('active'); // Active, canceled, trialing
             $table->timestamp('start_date');
             $table->timestamp('end_date')->nullable();

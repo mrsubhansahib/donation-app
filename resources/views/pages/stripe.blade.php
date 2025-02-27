@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <title>Donation App</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="https://js.stripe.com/v3/"></script>
 </head>
+
 <body>
     <div class="container">
         <h1>Confirm Payment</h1>
@@ -32,11 +34,13 @@
                             </div>
                             <div class="form-group">
                                 <label for="amount">Amount</label>
-                                <input type="number" id="amount" name="amount" class="form-control" required>
+                                <input type="number" id="amount" min="1" step="0.01" name="amount"
+                                    class="form-control" required>
                             </div>
                             <div class="form-group">
                                 <label for="cancellation">Cancellation</label>
-                                <input type="date" id="cancellation" name="cancellation" class="form-control" required>
+                                <input type="date" id="cancellation" name="cancellation" class="form-control"
+                                    required>
                             </div>
                             <div class="form-group">
                                 <label for="email">Email</label>
@@ -72,6 +76,9 @@
     </div>
 
     <script>
+        document.getElementById('amount').addEventListener('input', function() {
+            this.value = parseFloat(this.value).toFixed(2); // Ensures 2 decimal places
+        });
         const stripe = Stripe("{{ config('services.stripe.key') }}"); // Use Stripe public key from config
         const elements = stripe.elements();
 
@@ -114,7 +121,10 @@
             event.preventDefault();
 
             // Create the token for the card details
-            const {token, error} = await stripe.createToken(card);
+            const {
+                token,
+                error
+            } = await stripe.createToken(card);
 
             if (error) {
                 // Inform the user if there was an error
@@ -140,4 +150,5 @@
         }
     </script>
 </body>
+
 </html>

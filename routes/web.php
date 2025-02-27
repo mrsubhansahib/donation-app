@@ -2,10 +2,11 @@
 // use App\Http\Controllers\Admin\TransactionController as AdminController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\DonationController;
-use App\Http\Controllers\StripePaymentController;
+use App\Http\Controllers\SubscriptionController;
+use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\TransactionController;
-use App\Http\Controllers\UserController;
+use App\Http\Controllers\StripePaymentController;
+
 use Illuminate\Support\Facades\Route;
 
 
@@ -31,7 +32,6 @@ Route::controller(StripePaymentController::class)->group(function () {
     Route::post('stripe', 'stripePost')->name('stripe.post');
 });
 
-Route::group(['prefix' => 'donation'], function () {});
 // Public routes (no auth required)
 Route::prefix('auth')->group(function () {
     Route::get('login', function () {
@@ -40,7 +40,30 @@ Route::prefix('auth')->group(function () {
     Route::post('login-attempt', [AuthController::class, 'login'])->name('login-attempt');
 });
 
+Route::middleware(['auth'])->group(function () {
+    Route::prefix('user')->name('user.')->group(function () {
 
+
+        // Subscription Routes
+        Route::prefix('subscriptions')->name('subscriptions.')->group(function () {
+            Route::get('/', [SubscriptionController::class, 'index'])->name('index'); // Show all subscriptions
+            Route::get('/{subscription}', [SubscriptionController::class, 'show'])->name('show'); // Show single subscription details
+        });
+
+        // Invoice Routes
+        Route::prefix('invoices')->name('invoices.')->group(function () {
+            Route::get('/', [InvoiceController::class, 'index'])->name('index'); // Show all invoices
+            Route::get('/{invoice}', [InvoiceController::class, 'show'])->name('show'); // Show single invoice details
+        });
+
+        // Transaction Routes
+        Route::prefix('transactions')->name('transactions.')->group(function () {
+            Route::get('/', [TransactionController::class, 'index'])->name('index'); // Show all transactions
+            Route::get('/{transaction}', [TransactionController::class, 'show'])->name('show'); // Show single transaction details
+        });
+
+    });
+});
 
 
 

@@ -18,7 +18,17 @@ class User extends Authenticatable
 
     protected $fillable = [
         //add the fields according to the users migration
-        'first_name', 'last_name', 'title', 'email', 'password', 'city', 'address', 'zip_code', 'country', 'stripe_id', 'role'
+        'first_name',
+        'last_name',
+        'title',
+        'email',
+        'password',
+        'city',
+        'address',
+        'zip_code',
+        'country',
+        'stripe_id',
+        'role'
     ];
 
     /**
@@ -27,7 +37,8 @@ class User extends Authenticatable
      * @var array
      */
     protected $hidden = [
-        'password', 'remember_token',
+        'password',
+        'remember_token',
     ];
 
     /**
@@ -40,16 +51,18 @@ class User extends Authenticatable
     ];
 
     //add this function to the User model
-    public function subscriptions(){
+    public function subscriptions()
+    {
         return $this->hasMany(Subscription::class);
     }
     //add this function to the User model
-    public function transactions(){
+    public function transactions()
+    {
         return $this->hasMany(Transaction::class);
     }
-    
-    public function invoices(){
+
+    public function invoices()
+    {
         return $this->hasMany(Invoice::class);
     }
-    
-    }
+}

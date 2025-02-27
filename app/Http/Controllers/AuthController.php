@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Donation;
+use App\Invoice;
+use App\Subscription;
 use App\Transaction;
 use App\User;
 use Illuminate\Http\Request;
@@ -37,9 +39,13 @@ class AuthController extends Controller
 
     public function dashboard()
     {
-        $total_donar = User::where('role', 'donar')->get()->count();
-        return view('dashboard', compact('total_donar', ));
+        $total_donors = User::where('role', 'donar')->get()->count();
+        $total_donations = Subscription::all()->count();
+        // $total_transactions = Transaction::all()->count();
+        $total_invoices = Invoice::all()->count();
+        return view('dashboard', compact('total_donors', 'total_donations', 'total_invoices'));
     }
+
     /**
      * Show the form for creating a new resource.
      *

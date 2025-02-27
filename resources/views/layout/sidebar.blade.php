@@ -1,39 +1,71 @@
 <nav class="sidebar">
-  <div class="sidebar-header">
-    <a href="#" class="sidebar-brand">
-      Donation<span>App</span>
-    </a>
-    <div class="sidebar-toggler not-active">
-      <span></span>
-      <span></span>
-      <span></span>
+    <div class="sidebar-header">
+        <a href="#" class="sidebar-brand">
+            Donation<span>App</span>
+        </a>
+        <div class="sidebar-toggler not-active">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
     </div>
-  </div>
-  <div class="sidebar-body">
-    <ul class="nav">
-      {{-- <li class="nav-item nav-category">Main</li> --}}
-      <li class="nav-item {{ active_class(['/dashboard']) }}">
-        <a href="{{ url('/dashboard') }}" class="nav-link">
-          <i class="link-icon" data-feather="box"></i>
-          <span class="link-title">Dashboard</span>
-        </a>
-      </li>
-      {{-- <li class="nav-item {{ active_class(['/donations']) }}">
-        <a href="" class="nav-link">
-          <i class="link-icon" data-feather="pocket"></i>
-          <span class="link-title">Donations</span>
-        </a>
-      </li>
-      <li class="nav-item {{ active_class(['/transactions']) }}">
-        <a href="{{ route('transactions.index') }}" class="nav-link">
-          <i class="link-icon" data-feather="pocket"></i>
-          <span class="link-title">Transactions</span>
-        </a>
-      </li> --}}
+    <div class="sidebar-body">
+        <ul class="nav">
+            {{-- <li class="nav-item nav-category">Main</li> --}}
+            <li class="nav-item {{ active_class(['/dashboard']) }}">
+                <a href="{{ url('/dashboard') }}" class="nav-link">
+                    <i class="link-icon" data-feather="box"></i>
+                    <span class="link-title">Dashboard</span>
+                </a>
+            </li>
+            <!-- User Links -->
+            @if (auth()->user()->role === 'donar')
+                <li class="nav-item {{ active_class(['/user/transactions']) }}">
+                    <a href="{{ route('user.transactions.index') }}" class="nav-link">
+                        <i class="link-icon" data-feather="pocket"></i>
+                        <span class="link-title">My Transactions</span>
+                    </a>
+                </li>
+                <li class="nav-item {{ active_class(['/user/subscriptions']) }}">
+                    <a href="{{ route('user.subscriptions.index') }}" class="nav-link">
+                        <i class="link-icon" data-feather="layers"></i>
+                        <span class="link-title">My Donations</span>
+                    </a>
+                </li>
+                <li class="nav-item {{ active_class(['/user/invoices']) }}">
+                    <a href="{{ route('user.invoices.index') }}" class="nav-link">
+                        <i class="link-icon" data-feather="file-text"></i>
+                        <span class="link-title">My Invoices</span>
+                    </a>
+                </li>
+            @endif
+
+            <!-- Admin Links -->
+            @if (auth()->user()->role === 'admin')
+                <li class="nav-item {{ active_class(['/admin/transactions']) }}">
+                    <a href="{{ route('admin.transactions.index') }}" class="nav-link">
+                        <i class="link-icon" data-feather="pocket"></i>
+                        <span class="link-title">All Transactions</span>
+                    </a>
+                </li>
+                <li class="nav-item {{ active_class(['/admin/subscriptions']) }}">
+                    <a href="{{ route('admin.subscriptions.index') }}" class="nav-link">
+                        <i class="link-icon" data-feather="layers"></i>
+                        <span class="link-title">All Donations</span>
+                    </a>
+                </li>
+                <li class="nav-item {{ active_class(['/admin/invoices']) }}">
+                    <a href="{{ route('admin.invoices.index') }}" class="nav-link">
+                        <i class="link-icon" data-feather="file-text"></i>
+                        <span class="link-title">All Invoices</span>
+                    </a>
+                </li>
+            @endif
 
 
-      
-      {{-- <li class="nav-item nav-category">web apps</li>
+
+
+            {{-- <li class="nav-item nav-category">web apps</li>
       <li class="nav-item {{ active_class(['email/*']) }}">
         <a class="nav-link" data-bs-toggle="collapse" href="#email" role="button" aria-expanded="{{ is_active_route(['email/*']) }}" aria-controls="email">
           <i class="link-icon" data-feather="mail"></i>
@@ -324,8 +356,8 @@
           <span class="link-title">Documentation</span>
         </a>
       </li> --}}
-    </ul>
-  </div>
+        </ul>
+    </div>
 </nav>
 {{-- <nav class="settings-sidebar">
   <div class="sidebar-body">
