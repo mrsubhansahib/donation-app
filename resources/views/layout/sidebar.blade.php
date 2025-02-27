@@ -18,7 +18,7 @@
           <span class="link-title">Dashboard</span>
         </a>
       </li>
-      <li class="nav-item {{ active_class(['/donations']) }}">
+      {{-- <li class="nav-item {{ active_class(['/donations']) }}">
         <a href="" class="nav-link">
           <i class="link-icon" data-feather="pocket"></i>
           <span class="link-title">Donations</span>
@@ -29,7 +29,10 @@
           <i class="link-icon" data-feather="pocket"></i>
           <span class="link-title">Transactions</span>
         </a>
-      </li>
+      </li> --}}
+
+
+      
       {{-- <li class="nav-item nav-category">web apps</li>
       <li class="nav-item {{ active_class(['email/*']) }}">
         <a class="nav-link" data-bs-toggle="collapse" href="#email" role="button" aria-expanded="{{ is_active_route(['email/*']) }}" aria-controls="email">

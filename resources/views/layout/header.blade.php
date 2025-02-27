@@ -224,11 +224,11 @@
                 <span>Switch User</span>
               </a>
             </li> --}}
-            <li class="dropdown-item py-2">
-              <a href="{{route('logout')}}" class="text-body ms-0">
+            <li onclick="window.location.href='{{route('logout')}}" class="dropdown-item py-2">
+              {{-- <a href="" class="text-body ms-0"> --}}
                 <i class="me-2 icon-md" data-feather="log-out"></i>
                 <span>Log Out</span>
-              </a>
+              {{-- </a> --}}
             </li>
           </ul>
         </div>

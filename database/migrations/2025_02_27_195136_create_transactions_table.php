@@ -15,10 +15,12 @@ return new class extends Migration
     {
         Schema::create('transactions', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->foreignId('donation_id')->constrained()->onDelete('cascade');
-            $table->string('status');
-            $table->string('attempt_date');
+            $table->foreignId('user_id')->constrained()->onDelete('cascade'); // Link to users
+            $table->string('stripe_payment_id')->unique(); // Stripe charge ID
+            $table->decimal('amount', 10, 2); // Payment amount
+            $table->string('currency', 3);
+            $table->string('status'); // Paid, Failed, Refunded
+            $table->timestamp('paid_at');
             $table->timestamps();
         });
     }

@@ -10,20 +10,24 @@
         integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="https://js.stripe.com/v3/"></script>
+    <style>
+        .form-card {
+            background: white;
+            border-radius: 25px;
+        }
+    </style>
 </head>
 
-<body>
+<body style="background: #e9eae4;">
+    <h1 class="text-center text-light p-5" style="background: #909d97;font-size: 44px;">Daily / Weekly / Monthly Donation</h1>
     <div class="container  mt-3 w-75">
-        <h1 class="text-center">Daily | Weekly | Monthly Donation</h1>
-        <div class="w-25 m-auto">
-            <hr>
-        </div>
+      
 
 
         <form action="{{ route('stripe.post') }}" method="POST" id="payment-form" class="mb-5">
             @csrf
-            <h3 class="mt-3">I would like to give</h3>
-            <div class="row border-2 borderd-dark border p-5">
+            <h2 class="mt-5 mb-2">I would like to give</h2>
+            <div class="row border-2 borderd-dark border p-3 pb-4 form-card">
 
                 <div class="col-md-4">
                     <label for="currency">Currency</label>
@@ -40,7 +44,7 @@
                 <div class="col-md-4">
                     <label for="type">Type</label>
                     <select name="type" id="type" class="form-control">
-                        <option selected  value="day">Daily</option>
+                        <option selected value="day">Daily</option>
                         <option disabled value="week">Weekly</option>
                         <option disabled value="month">Monthly</option>
                     </select>
@@ -56,8 +60,8 @@
                         value="<?php echo date('Y-m-d', strtotime('+1 month')); ?>" required>
                 </div>
             </div>
-            <h3 class="mt-3">Address Details</h3>
-            <div class="row border-2 borderd-dark border p-5">
+            <h2 class="mt-4 mb-2">Address Details</h2>
+            <div class="row border-2 borderd-dark border p-3 pb-4 form-card">
                 <div class="col-md-2">
                     <label for="title">Title</label>
                     <select name="title" id="title" class="form-control">
@@ -110,8 +114,8 @@
                 </div>
 
             </div>
-            <h3 class="mt-3">Card Details</h3>
-            <div class="row border-2 borderd-dark border p-5">
+            <h2 class="mt-4 mb-2">Card Details</h2>
+            <div class="row border-2 borderd-dark border p-3 pb-4 pt-5 form-card">
                 <!-- Stripe Elements Card -->
                 <div class="form-row mb-3">
                     {{-- <label for="card-element">Credit or debit card</label> --}}
@@ -130,7 +134,7 @@
     <script>
         const stripe = Stripe("{{ config('services.stripe.key') }}"); // Use Stripe public key from config
         const elements = stripe.elements();
-        
+
         // Create an instance of the card Element with ZIP code hidden
         const card = elements.create('card', {
             style: {
@@ -150,10 +154,10 @@
             },
             hidePostalCode: true
         });
-    
+
         // Add the card Element into the `card-element` <div>
         card.mount('#card-element');
-    
+
         // Handle real-time validation errors from the card Element
         card.on('change', function(event) {
             const displayError = document.getElementById('card-errors');
@@ -163,18 +167,21 @@
                 displayError.textContent = '';
             }
         });
-    
+
         // Handle form submission
         const form = document.getElementById('payment-form');
         form.addEventListener('submit', async function(event) {
             event.preventDefault(); // Stop default form submission
-    
+
             // Disable the submit button to prevent multiple submissions
             document.querySelector("button[type=submit]").disabled = true;
-    
+
             // Create the token for the card details
-            const { token, error } = await stripe.createToken(card);
-    
+            const {
+                token,
+                error
+            } = await stripe.createToken(card);
+
             if (error) {
                 // Show error and re-enable submit button
                 const errorElement = document.getElementById('card-errors');
@@ -185,7 +192,7 @@
                 stripeTokenHandler(token);
             }
         });
-    
+
         // Function to submit the form with Stripe token and additional data
         function stripeTokenHandler(token) {
             // Insert the token ID into the form so it gets submitted to the server
@@ -194,12 +201,12 @@
             hiddenInput.setAttribute('name', 'stripeToken');
             hiddenInput.setAttribute('value', token.id);
             form.appendChild(hiddenInput);
-    
+
             // Submit the form with the token and other fields
             form.submit();
         }
     </script>
-    
+
 </body>
 
 </html>

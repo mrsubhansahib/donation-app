@@ -82,25 +82,9 @@ class StripePaymentController extends Controller
             'zip_code' => $data['zip_code'],
             'country' => $data['country'],
         ]);
-        $user->donations()->create([
-            'user_id' => $user->id,
-            'currency' => $data['currency'],
-            'amount' => $data['amount'],
-            'start_date' => $data['start_date'],
-            'end_date' => $data['cancellation'],
-            'type' => $data['type'],
-
-        ]);
 
 
 
-
-        // Card::create([
-        //     'user_id' => $user->id,
-        //     'card_number' => $data['card_number'],
-        //     'expiry' => $data['expiry_date'],
-        //     'cvv' => $data['cvv'],
-        // ]);
 
         Stripe\Stripe::setApiKey(env('STRIPE_SECRET'));
 
@@ -124,21 +108,45 @@ class StripePaymentController extends Controller
             'source' => $request->stripeToken,
         ]);
 
-        // Convert start and end dates to Unix timestamps
+        // Convert start and end dates to Carbon instances
+        // Convert start and end dates to Carbon instances
         $startDate = Carbon::parse($request->start_date);
         $cancelAt = Carbon::parse($request->cancellation)->timestamp;
-        
-        if ($startDate->isPast()) {
-            $startDate = Carbon::now()->addMinute(); // Set trial start at least 1 min in the future
+        $now = Carbon::now();
+
+        // Debug: See how Carbon interprets the dates
+        // dd([
+        //     'start_date' => $startDate->toDateTimeString(),
+        //     'now' => $now->toDateTimeString(),
+        //     'diff_in_hours' => $now->diffInHours($startDate, false),
+        //     'is_past' => $startDate->isPast(),
+        //     'is_today' => $startDate->isToday(),
+        // ]);
+
+
+        if ($startDate->isPast() || $startDate->isToday() || Carbon::now()->diffInHours($startDate, false) <= 6) {
+            // Charge immediately but add a buffer to prevent past timestamp error
+            $billingAnchor = Carbon::now()->addMinute()->timestamp; // Add 1 minute buffer
+
+            $subscription = Subscription::create([
+                'customer' => $customer->id,
+                'items' => [['price' => $price->id]],
+                'billing_cycle_anchor' => $billingAnchor, // Use future timestamp
+                'expand' => ['latest_invoice.payment_intent'], // Fetch payment status immediately
+                'cancel_at' => $cancelAt, // Set auto-cancel date
+            ]);
+        } else {
+            // Set trial period (charge after trial ends)
+            $subscription = Subscription::create([
+                'customer' => $customer->id,
+                'items' => [['price' => $price->id]],
+                'trial_end' => $startDate->timestamp, // Delays charge until future start date
+                'cancel_at' => $cancelAt,
+            ]);
         }
-        $startTimestamp = $startDate->timestamp;
-        // Step 4: Create a Subscription with Delayed Start using "Trial Period"
-        $subscription = Subscription::create([
-            'customer' => $customer->id,
-            'items' => [['price' => $price->id]],
-            'trial_end' => $startTimestamp, // Delays the charge until the start date
-            // 'cancel_at' => $cancelAt,
-        ]);
+
+
+
         Auth::login($user);
         return redirect()->route('dashboard')->with('success', 'Donation successfully registered');
     }

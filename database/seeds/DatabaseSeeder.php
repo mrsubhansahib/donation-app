@@ -25,6 +25,7 @@ class DatabaseSeeder extends Seeder
             'country' => '',
             'address' => '',
             'zip_code' => '',
+            'stripe_id' => '',
             ]);
     }
 }

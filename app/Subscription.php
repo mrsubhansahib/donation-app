@@ -5,13 +5,15 @@ namespace App;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Card extends Model
+class Subscription extends Model
 {
     use HasFactory;
+
     protected $fillable = [
-        'user_id', 'card_number', 'expiry', 'cvv'
+        'user_id', 'stripe_subscription_id', 'stripe_price_id', 'status', 'start_date', 'end_date', 'canceled_at'
     ];
     public function user(){
         return $this->belongsTo(User::class);
     }
+
 }

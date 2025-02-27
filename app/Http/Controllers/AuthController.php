@@ -38,9 +38,7 @@ class AuthController extends Controller
     public function dashboard()
     {
         $total_donar = User::where('role', 'donar')->get()->count();
-        $total_donations = Donation::all()->count();
-        $total_transactions = Transaction::all()->count();
-        return view('dashboard', compact('total_donar', 'total_donations', 'total_transactions'));
+        return view('dashboard', compact('total_donar', ));
     }
     /**
      * Show the form for creating a new resource.

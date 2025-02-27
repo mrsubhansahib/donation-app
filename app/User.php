@@ -15,9 +15,10 @@ class User extends Authenticatable
      *
      * @var array
      */
+
     protected $fillable = [
         //add the fields according to the users migration
-        'first_name', 'last_name', 'title', 'email', 'password', 'city', 'address', 'zip_code', 'country', 
+        'first_name', 'last_name', 'title', 'email', 'password', 'city', 'address', 'zip_code', 'country', 'stripe_id', 'role'
     ];
 
     /**
@@ -39,15 +40,16 @@ class User extends Authenticatable
     ];
 
     //add this function to the User model
-    public function donations(){
-        return $this->hasMany(Donation::class);
+    public function subscriptions(){
+        return $this->hasMany(Subscription::class);
     }
     //add this function to the User model
     public function transactions(){
         return $this->hasMany(Transaction::class);
     }
-    //add this function to the User model
-    public function card(){
-        return $this->has(Card::class);
+    
+    public function invoices(){
+        return $this->hasMany(Invoice::class);
     }
-}
+    
+    }

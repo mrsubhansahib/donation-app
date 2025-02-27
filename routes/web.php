@@ -43,24 +43,11 @@ Route::prefix('auth')->group(function () {
 
 
 
-Route::get('/transactions', [TransactionController::class, 'index'])->name('transactions.index');
-Route::get('/transactions/{user_id}', [TransactionController::class, 'show'])->name('transactions.show');
-
-
 
 Route::group(['prefix' => 'donation'], function () {
     Route::get('/regular', function () {
         return view('pages.donation.regular-donation');
     });
-    Route::post('/regular', [DonationController::class, 'regular_donation'])->name('regular.donation');
-    Route::get('/friday', function () {
-        return view('pages.donation.friday-donation');
-    });
-    Route::post('/friday', [DonationController::class, 'friday_donation'])->name('friday.donation');
-    Route::get('/ramadan', function () {
-        return view('pages.donation.ramadan-donation');
-    });
-    Route::post('/ramadan', [DonationController::class, 'ramadan_donation'])->name('ramadan.donation');
 });
 
 
@@ -72,9 +59,6 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
 
-    Route::group(['prefix' => 'donation'], function () {
-        Route::get('/show', [DonationController::class, 'show_donation'])->name('donations.show');
-    });
 });
 
 
