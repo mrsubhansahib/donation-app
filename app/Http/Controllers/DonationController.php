@@ -65,7 +65,7 @@ class DonationController extends Controller
     // Friday donation
     public function friday_donation(Request $request)
     {
-        dd($request->all());
+        // dd($request->all());
         $data = $request->validate([
             'name' => 'required',
             'email' => 'required|email',

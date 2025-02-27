@@ -43,13 +43,13 @@ Route::prefix('auth')->group(function () {
 
 
 
-Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
+Route::prefix('admin')->group(function () {
     Route::get('/transactions', [AdminController::class, 'index'])->name('admin.transactions.index');
     Route::get('/transactions/{user_id}', [AdminController::class, 'show'])->name('admin.transactions.show');
 });
 
 // User Routes - Only Accessible by Authenticated Users
-Route::middleware(['auth'])->prefix('user')->group(function () {
+Route::prefix('user')->group(function () {
     Route::get('/transactions', [UserController::class, 'index'])->name('user.transactions.index');
 });
 
