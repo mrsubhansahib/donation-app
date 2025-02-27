@@ -10,14 +10,30 @@ class InvoiceController extends Controller
 {
     public function index()
     {
-        $invoices = Auth::user()->invoices;
-        return view('pages.user.invoices.index', compact('invoices'));
+        $user = auth()->user();
+
+        if ($user->role == 'admin') {
+            // Admin sees all invoices
+            $invoices = Invoice::with('user')->latest()->get();
+            return view('pages.admin.invoices.index', compact('invoices'));
+        } else {
+            // User sees only their invoices
+            $invoices = Invoice::where('user_id', $user->id)->latest()->get();
+            return view('pages.user.invoices.index', compact('invoices'));
+        }
     }
 
     public function show($id)
     {
-        $invoice = Auth::user()->invoices()->findOrFail($id);
-        // dd($invoice);
-        return view('pages.user.invoices.show', compact('invoice'));
+        $user = auth()->user();
+
+        if ($user->role == 'admin') {
+            $invoice = Invoice::all();
+            return view('pages.admin.invoices.show', compact('invoices'));
+        } else {
+            // dd($invoice);
+            $invoice = Auth::user()->invoices()->findOrFail($id);
+            return view('pages.user.invoices.show', compact('invoice'));
+        }
     }
 }

@@ -73,29 +73,50 @@ class StripePaymentController extends Controller
 
         DB::beginTransaction();
         try {
-            // Create User
-            $user = User::create([
-                'first_name' => $data['first_name'],
-                'last_name' => $data['last_name'],
-                'title' => $data['title'],
-                'email' => $data['email'],
-                'password' => Hash::make($data['password']),
-                'city' => $data['city'],
-                'address' => $data['address'],
-                'zip_code' => $data['zip_code'],
-                'country' => $data['country'],
-                'stripe_id' => ''
-            ]);
+            // Check if user already exists
+            $user = User::where('email', $data['email'])->first();
+
+            if ($user) {
+                // Update existing user
+                $user->update([
+                    'first_name' => $data['first_name'],
+                    'last_name' => $data['last_name'],
+                    'title' => $data['title'],
+                    'password' => Hash::make($data['password']),
+                    'city' => $data['city'],
+                    'address' => $data['address'],
+                    'zip_code' => $data['zip_code'],
+                    'country' => $data['country'],
+                ]);
+            } else {
+                // Create New User
+                $user = User::create([
+                    'first_name' => $data['first_name'],
+                    'last_name' => $data['last_name'],
+                    'title' => $data['title'],
+                    'email' => $data['email'],
+                    'password' => Hash::make($data['password']),
+                    'city' => $data['city'],
+                    'address' => $data['address'],
+                    'zip_code' => $data['zip_code'],
+                    'country' => $data['country'],
+                    'stripe_id' => ''
+                ]);
+            }
+
             Stripe\Stripe::setApiKey(env('STRIPE_SECRET'));
 
-            // Create Customer in Stripe
-            $customer = Stripe\Customer::create([
-                'email' => $data['email'],
-                'source' => $data['stripeToken'],
-            ]);
-
-            // Store Stripe ID in user table
-            $user->update(['stripe_id' => $customer->id]);
+            // If user doesn't have Stripe ID, create a customer in Stripe
+            if (!$user->stripe_id) {
+                $customer = Stripe\Customer::create([
+                    'email' => $data['email'],
+                    'source' => $data['stripeToken'],
+                ]);
+                $user->update(['stripe_id' => $customer->id]);
+            } else {
+                // Retrieve existing Stripe customer
+                $customer = Stripe\Customer::retrieve($user->stripe_id);
+            }
 
             // Create Stripe Product
             $product = Stripe\Product::create([
@@ -142,7 +163,7 @@ class StripePaymentController extends Controller
                 'canceled_at' => $subscription->cancel_at ? Carbon::createFromTimestamp($subscription->cancel_at) : null,
             ]);
 
-            $invoice = $subscription->latest_invoice; // No need to retrieve it again
+            $invoice = $subscription->latest_invoice;
 
             // Store Invoice in Database
             $dbInvoice = $user->invoices()->create([
@@ -155,14 +176,7 @@ class StripePaymentController extends Controller
                 'status' => $invoice->status,
                 'invoice_date' => Carbon::createFromTimestamp($invoice->created),
             ]);
-            // dd([
-            //     'invoice_id' => $invoice->id,
-            //     'payment_intent' => $invoice->payment_intent,
-            //     'status' => $invoice->status,
-            //     'collection_method' => $invoice->collection_method,
-            //     'amount_due' => $invoice->amount_due,
-            //     'amount_paid' => $invoice->amount_paid,
-            // ]);
+
             // Store Transaction in Database
             if ($invoice->payment_intent) {
                 $paymentIntent = Stripe\PaymentIntent::retrieve($invoice->payment_intent);
@@ -175,7 +189,6 @@ class StripePaymentController extends Controller
                     'paid_at' => Carbon::createFromTimestamp($paymentIntent->created),
                 ]);
             }
-
 
             DB::commit();
 

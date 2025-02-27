@@ -2,13 +2,14 @@
 
 @section('content')
     <div class="container mt-4">
-        <h2 class="mb-4">Your Invoices</h2>
+        <h2 class="mb-4">All Invoices</h2>
         <div class="card shadow">
             <div class="card-body">
                 <table class="table table-bordered table-striped">
                     <thead class="thead-dark">
                         <tr>
                             <th>ID</th>
+                            <th>User Email</th>
                             <th>Donation Type</th>
                             <th>Amount Due</th>
                             <th>Amount Paid</th>
@@ -22,6 +23,7 @@
                             @foreach ($invoices as $invoice)
                                 <tr>
                                     <td>{{ $invoice->id }}</td>
+                                    <td>{{ $invoice->user->email }}</td>
                                     <td>
                                         @if ($invoice->type == 'day')
                                             Daily
@@ -64,7 +66,7 @@
                             @endforeach
                         @else
                             <tr>
-                                <td colspan="7">
+                                <td colspan="8">
 
                                     <p class="text-center">No invoices found.</p>
                                 </td>

@@ -2,13 +2,14 @@
 
 @section('content')
     <div class="container mt-4">
-        <h2 class="mb-4">Your Transactions</h2>
+        <h2 class="mb-4">All Transactions</h2>
         <div class="card shadow">
             <div class="card-body">
                 <table class="table table-bordered table-striped">
                     <thead class="thead-dark">
                         <tr>
                             <th>ID</th>
+                            <th>User Email</th>
                             <th>Donation Type</th>
                             <th>Amount</th>
                             <th>Status</th>
@@ -17,17 +18,19 @@
                         </tr>
                     </thead>
                     <tbody>
+
                         @if ($transactions->count() > 0)
                             @foreach ($transactions as $transaction)
                                 <tr>
                                     <td>{{ $transaction->id }}</td>
+                                    <td>{{ $transaction->user->email }}</td>
 
                                     <td>
-                                        @if ($subscription->type == 'day')
+                                        @if ($transaction->type == 'day')
                                             Daily
-                                        @elseif($subscription->type == 'week')
+                                        @elseif($transaction->type == 'week')
                                             Weekly
-                                        @elseif($subscription->type == 'month')
+                                        @elseif($transaction->type == 'month')
                                             Monthly
                                         @endif
                                     </td>
@@ -40,6 +43,7 @@
                                             {{ $transaction->amount ? number_format($transaction->amount, 2) : '0' }} €
                                         @endif
                                     </td>
+                                
                                     <td>
                                         {{ ucfirst($transaction->status) }}
                                     </td>
@@ -53,13 +57,14 @@
                             @endforeach
                         @else
                             <tr>
-                                <td colspan="6">
+                                <td colspan="7">
 
                                     <p class="text-center">No transactions found.</p>
                                 </td>
 
                             </tr>
                         @endif
+
                     </tbody>
                 </table>
             </div>

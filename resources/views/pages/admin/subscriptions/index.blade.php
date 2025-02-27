@@ -2,13 +2,14 @@
 
 @section('content')
     <div class="container mt-4">
-        <h2 class="mb-4">Your Donations</h2>
+        <h2 class="mb-4">All Donations</h2>
         <div class="card shadow">
             <div class="card-body">
                 <table class="table table-bordered table-striped">
                     <thead class="thead-dark">
                         <tr>
                             <th>ID</th>
+                            <th>User Email</th>
                             <th>Donation Type</th>
                             <th>Amount</th>
                             <th>Status</th>
@@ -22,6 +23,7 @@
                             @foreach ($subscriptions as $subscription)
                                 <tr>
                                     <td>{{ $subscription->id }}</td>
+                                    <td>{{ $subscription->user->email }}</td>
                                     <td>
                                         @if ($subscription->type == 'day')
                                             Daily
@@ -55,7 +57,7 @@
                             @endforeach
                         @else
                             <tr>
-                                <td colspan="8">
+                                <td colspan="7">
 
                                     <p class="text-center">No donations found.</p>
                                 </td>

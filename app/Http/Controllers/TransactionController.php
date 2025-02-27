@@ -10,13 +10,27 @@ class TransactionController extends Controller
 {
     public function index()
     {
-        $transactions = Auth::user()->transactions;
-        return view('pages.user.transactions.index', compact('transactions'));
+        $user = auth()->user();
+        if ($user->role == 'admin') {
+            // Admin sees all transactions
+            $transactions = Transaction::with('donation', 'user')->latest()->get();
+            return view('pages.admin.transactions.index', compact('transactions'));
+        } else {
+            // User sees only their transactions
+            $transactions = Transaction::where('user_id', $user->id)->with('donation')->latest()->get();
+            return view('pages.user.transactions.index', compact('transactions'));
+        }
     }
 
     public function show($id)
     {
-        $transaction = Auth::user()->transactions()->findOrFail($id);
-        return view('pages.user.transactions.show', compact('transaction'));
+        $user = auth()->user();
+        if ($user->role == 'admin') {
+            $transaction = Transaction::all();
+            return view('pages.admin.transactions.shpw', compact('transactions'));
+        } else {
+            $transaction = Auth::user()->transactions()->findOrFail($id);
+            return view('pages.user.transactions.show', compact('transaction'));
+        }
     }
 }

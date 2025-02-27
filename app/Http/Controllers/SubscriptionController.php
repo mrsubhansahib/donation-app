@@ -10,13 +10,30 @@ class SubscriptionController extends Controller
 {
     public function index()
     {
-        $subscriptions = Auth::user()->subscriptions;
-        return view('pages.user.subscriptions.index', compact('subscriptions'));
+        $user = auth()->user();
+
+        if ($user->role == 'admin') {
+            // Admin sees all subscriptions
+            $subscriptions = Subscription::with('user')->latest()->get();
+            return view('pages.admin.subscriptions.index', compact('subscriptions'));
+        } else {
+            // User sees only their subscriptions
+            $subscriptions = Subscription::where('user_id', $user->id)->latest()->get();
+            return view('pages.user.subscriptions.index', compact('subscriptions'));
+        }
     }
 
     public function show($id)
     {
-        $subscription = Auth::user()->subscriptions()->findOrFail($id);
-        return view('pages.user.subscriptions.show', compact('subscription'));
+
+        $user = auth()->user();
+
+        if ($user->role == 'admin') {
+            $subscriptions = Subscription::all();
+            return view('pages.admin.subscriptions.show', compact('subscriptions'));
+        } else {
+            $subscription = Auth::user()->subscriptions()->findOrFail($id);
+            return view('pages.user.subscriptions.show', compact('subscription'));
+        }
     }
 }

@@ -2,6 +2,7 @@
 // use App\Http\Controllers\Admin\TransactionController as AdminController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\DonorController;
 use App\Http\Controllers\SubscriptionController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\TransactionController;
@@ -61,7 +62,29 @@ Route::middleware(['auth'])->group(function () {
             Route::get('/', [TransactionController::class, 'index'])->name('index'); // Show all transactions
             Route::get('/{transaction}', [TransactionController::class, 'show'])->name('show'); // Show single transaction details
         });
+    });
+    Route::prefix('admin')->name('admin.')->group(function () {
 
+        Route::prefix('subscriptions')->name('subscriptions.')->group(function () {
+            Route::get('/', [SubscriptionController::class, 'index'])->name('index'); // Show all subscriptions
+            Route::get('/{subscription}', [SubscriptionController::class, 'show'])->name('show'); // Show single subscription details
+        });
+        Route::prefix('donors')->name('donors.')->group(function () {
+            Route::get('/', [DonorController::class, 'index'])->name('index'); // Show all subscriptions
+            Route::get('/{subscription}', [DonorController::class, 'show'])->name('show'); // Show single subscription details
+        });
+
+        // Invoice Routes
+        Route::prefix('invoices')->name('invoices.')->group(function () {
+            Route::get('/', [InvoiceController::class, 'index'])->name('index'); // Show all invoices
+            Route::get('/{invoice}', [InvoiceController::class, 'show'])->name('show'); // Show single invoice details
+        });
+
+        // Transaction Routes
+        Route::prefix('transactions')->name('transactions.')->group(function () {
+            Route::get('/', [TransactionController::class, 'index'])->name('index'); // Show all transactions
+            Route::get('/{transaction}', [TransactionController::class, 'show'])->name('show'); // Show single transaction details
+        });
     });
 });
 
@@ -81,7 +104,6 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', [AuthController::class, 'dashboard'])->name('dashboard');
 
     Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
-
 });
 
 
