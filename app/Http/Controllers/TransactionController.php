@@ -14,9 +14,9 @@ class TransactionController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function index()
-{
-            $transactions = Transaction::with('user', 'donation')->get();
-        return view('pages.admin.transactions-index', compact('transactions'));
+    {
+        $transactions = Transaction::all();
+        return view('pages.transactions.index', compact('transactions'));
     }
 
     /**
@@ -50,7 +50,7 @@ class TransactionController extends Controller
     {
         $user = User::findOrFail($user_id);
         $transactions = Transaction::where('user_id', $user_id)->with('donation')->get();
-        return view('pages.admin.transactions-show', compact('user', 'transactions'));
+        return view('pages.transactions.show', compact('user', 'transactions'));
     }
 
     /**

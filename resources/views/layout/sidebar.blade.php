@@ -25,7 +25,7 @@
         </a>
       </li>
       <li class="nav-item {{ active_class(['/transactions']) }}">
-        <a href="{{ route('admin.transactions.index') }}" class="nav-link">
+        <a href="{{ route('transactions.index') }}" class="nav-link">
           <i class="link-icon" data-feather="pocket"></i>
           <span class="link-title">Transactions</span>
         </a>

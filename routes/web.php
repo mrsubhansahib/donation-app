@@ -26,7 +26,7 @@ Route::get('/', function () {
     return view('pages.index');
 })->name('home');
 
-Route::controller(StripePaymentController::class)->group(function(){
+Route::controller(StripePaymentController::class)->group(function () {
     Route::get('stripe', 'stripe');
     Route::post('stripe', 'stripePost')->name('stripe.post');
 });
@@ -43,15 +43,8 @@ Route::prefix('auth')->group(function () {
 
 
 
-Route::prefix('admin')->group(function () {
-    Route::get('/transactions', [AdminController::class, 'index'])->name('admin.transactions.index');
-    Route::get('/transactions/{user_id}', [AdminController::class, 'show'])->name('admin.transactions.show');
-});
-
-// User Routes - Only Accessible by Authenticated Users
-Route::prefix('user')->group(function () {
-    Route::get('/transactions', [UserController::class, 'index'])->name('user.transactions.index');
-});
+Route::get('/transactions', [TransactionController::class, 'index'])->name('transactions.index');
+Route::get('/transactions/{user_id}', [TransactionController::class, 'show'])->name('transactions.show');
 
 
 
@@ -68,7 +61,7 @@ Route::group(['prefix' => 'donation'], function () {
         return view('pages.donation.ramadan-donation');
     });
     Route::post('/ramadan', [DonationController::class, 'ramadan_donation'])->name('ramadan.donation');
-}); 
+});
 
 
 
@@ -81,7 +74,7 @@ Route::middleware(['auth'])->group(function () {
 
     Route::group(['prefix' => 'donation'], function () {
         Route::get('/show', [DonationController::class, 'show_donation'])->name('donations.show');
-       });
+    });
 });
 
 
