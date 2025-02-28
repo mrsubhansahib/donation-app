@@ -5,6 +5,11 @@
         <h2 class="mb-4">All Invoices</h2>
         <div class="card shadow">
             <div class="card-body">
+
+
+
+
+
                 <table class="table table-bordered table-striped">
                     <thead class="thead-dark">
                         <tr>

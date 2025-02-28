@@ -207,6 +207,26 @@
         }
     </script>
 
+<script>
+    // Function to set the minimum date for both inputs
+    function setMinDate() {
+        const today = new Date().toISOString().split('T')[0]; // Get today's date in YYYY-MM-DD format
+        const startDateInput = document.getElementById('start_date');
+        const endDateInput = document.getElementById('cancellation');
+
+        // Set the min attribute for both date inputs
+        startDateInput.min = today;
+        endDateInput.min = today;
+
+        // Set default values to today and one month from today
+        startDateInput.value = today; // Set start date to today
+        endDateInput.value = new Date(new Date().setMonth(new Date().getMonth() + 1)).toISOString().split('T')[0]; // Set end date to one month from today
+    }
+
+    // Call the function when the page loads
+    window.onload = setMinDate;
+</script>
+
 </body>
 
 </html>

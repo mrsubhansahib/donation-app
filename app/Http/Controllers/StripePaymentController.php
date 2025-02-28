@@ -162,8 +162,34 @@ class StripePaymentController extends Controller
                 'end_date' => $subscription->cancel_at ? Carbon::createFromTimestamp($subscription->cancel_at) : null,
                 'canceled_at' => $subscription->cancel_at ? Carbon::createFromTimestamp($subscription->cancel_at) : null,
             ]);
-
+            // dd($dbSubscription);
+           
             $invoice = $subscription->latest_invoice;
+             
+            //  $stripe = new \Stripe\StripeClient(env('STRIPE_SECRET'));
+
+            //  $invoice = $stripe->invoices->retrieve($subscription->latest_invoice, [
+            //      'expand' => ['payment_intent', 'charge', 'payment_method'],
+            //  ]);
+     
+            //  dd($invoice);
+             
+            //  dd($invoice);
+            // dd($invoice->charge);
+            // dd($invoice->collection_method); // "charge_automatically" ya "send_invoice"
+             // Store Invoice in Database
+            //  dd($invoice->status);
+            // dd($invoice->payment_intent ?? 'No Payment Intent Found');
+//             $chargeId = $invoice->latest_charge ?? 'No Charge Found';
+// dd($chargeId);
+// dd($invoice->status);
+
+// dd($invoice->collection_method); 
+
+        // $stripe = new \Stripe\StripeClient(env('STRIPE_SECRET'));
+
+        // $invoice = $stripe->invoices->retrieve($subscription->latest_invoice, []);
+        // dd($invoice);
 
             // Store Invoice in Database
             $dbInvoice = $user->invoices()->create([
@@ -178,19 +204,19 @@ class StripePaymentController extends Controller
             ]);
 
             // Store Transaction in Database
-            if ($invoice->payment_intent) {
-                $paymentIntent = Stripe\PaymentIntent::retrieve($invoice->payment_intent);
-                $user->transactions()->create([
-                    'stripe_payment_id' => $paymentIntent->id,
-                    'amount' => $paymentIntent->amount / 100,
-                    'currency' => $paymentIntent->currency,
-                    'type' => $data['type'],
-                    'status' => $paymentIntent->status,
-                    'paid_at' => Carbon::createFromTimestamp($paymentIntent->created),
-                ]);
-            }
+            // if ($invoice->payment_intent) {
+            //     $paymentIntent = Stripe\PaymentIntent::retrieve($invoice->payment_intent);
+            //     $user->transactions()->create([
+            //         'stripe_payment_id' => $paymentIntent->id,
+            //         'amount' => $paymentIntent->amount / 100,
+            //         'currency' => $paymentIntent->currency,
+            //         'type' => $data['type'],
+            //         'status' => $paymentIntent->status,
+            //         'paid_at' => Carbon::createFromTimestamp($paymentIntent->created),
+            //     ]);
+            // }
 
-            DB::commit();
+            // DB::commit();
 
             Auth::login($user);
             return redirect()->route('dashboard')->with('success', 'Subscription successfully created!');
