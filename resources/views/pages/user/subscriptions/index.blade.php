@@ -33,11 +33,11 @@
                                     </td>
                                     <td>
                                         @if ($subscription->currency == 'usd')
-                                            {{ $subscription->amount ? number_format($subscription->amount, 2) : '0' }} $
+                                            {{ $subscription->price ? number_format($subscription->price, 2) : '0' }} $
                                         @elseif($subscription->currency == 'gbp')
-                                            {{ $subscription->amount ? number_format($subscription->amount, 2) : '0' }} £
+                                            {{ $subscription->price ? number_format($subscription->price, 2) : '0' }} £
                                         @elseif($subscription->currency == 'eur')
-                                            {{ $subscription->amount ? number_format($subscription->amount, 2) : '0' }} €
+                                            {{ $subscription->price ? number_format($subscription->price, 2) : '0' }} €
                                         @endif
                                     </td>
                                     <td>
