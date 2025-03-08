@@ -10,19 +10,18 @@ class Invoice extends Model
     use HasFactory;
 
     protected $fillable = [
-        'user_id',
+        'subscription_id',
         'stripe_invoice_id',
-        'stripe_subscription_id',
-        'amount_due',
-        'amount_paid',
-        'status',
         'invoice_date',
-        'currency',
-        'type',
+        'status',
     ];
 
-    public function user()
+    public function subscription()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(Subscription::class);
+    }
+    public function transactions()
+    {
+        return $this->hasMany(Transaction::class);
     }
 }

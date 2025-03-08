@@ -9,18 +9,20 @@ class Transaction extends Model
 {
     use HasFactory;
 
+
     protected $fillable = [
-        'user_id',
+        'invoice_id', // Local Invoice ID
         'stripe_payment_id',
-        'amount',
-        'currency',
-        'status',
         'paid_at',
-        'type',
+        'status', // Paid, Failed, Refunded
     ];
 
-    public function user()
+
+    /**
+     * Get the invoice associated with this transaction.
+     */
+    public function invoice()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(Invoice::class);
     }
 }

@@ -71,8 +71,8 @@ class StripePaymentController extends Controller
             'stripeToken' => 'required'
         ]);
 
-        // DB::beginTransaction();
-        // try {
+        DB::beginTransaction();
+        try {
             // Check if user already exists
             $user = User::where('email', $data['email'])->first();
 
@@ -135,7 +135,7 @@ class StripePaymentController extends Controller
             $startDate = Carbon::parse($data['start_date']);
             $cancelAt = Carbon::parse($data['cancellation'])->timestamp;
             $now = Carbon::now();
-                
+
             // Ensure billing cycle anchor is always in the future
             $billingAnchor = $startDate->isPast() || $startDate->isToday() || $now->diffInHours($startDate, false) <= 6
                 ? Carbon::now()->addMinute()->timestamp
@@ -162,67 +162,35 @@ class StripePaymentController extends Controller
                 'end_date' => $subscription->cancel_at ? Carbon::createFromTimestamp($subscription->cancel_at) : null,
                 'canceled_at' => $subscription->cancel_at ? Carbon::createFromTimestamp($subscription->cancel_at) : null,
             ]);
-            // dd($dbSubscription);
-           
+
             $invoice = $subscription->latest_invoice;
-             
-             $stripe = new \Stripe\StripeClient(env('STRIPE_SECRET'));
 
-             $invoice = $stripe->invoices->retrieve($subscription->latest_invoice, [
-                 'expand' => ['payment_intent', 'charge', 'payment_method'],
-             ]);
-     
-            //  dd($invoice);
-             
-            // dd($invoice);
-            // dd($invoice->charge);
-            // dd($invoice->collection_method); // "charge_automatically" ya "send_invoice"
-                //  Store Invoice in Database
-            // dd($invoice->status);
-            // dd($invoice->payment_intent ?? 'No Payment Intent Found');
-            $chargeId = $invoice->latest_charge ?? 'No Charge Found';
-            // dd($chargeId);
-            // dd($invoice->status);
-
-            // dd($invoice->collection_method); 
-
-            $stripe = new \Stripe\StripeClient(env('STRIPE_SECRET'));
-
-            $invoice = $stripe->invoices->retrieve($subscription->latest_invoice, []);
-            // dd($invoice);
-
-            // Store Invoice in Database 
-            $dbInvoice = $user->invoices()->create([
+            // Store Invoice in Database
+            $dbInvoice = $dbSubscription->invoices()->create([
                 'stripe_invoice_id' => $invoice->id,
-                'stripe_subscription_id' => $subscription->id,
-                'currency' => $data['currency'],
-                'type' => $data['type'],
-                'amount_due' => $invoice->amount_due / 100,
-                'amount_paid' => $invoice->amount_paid / 100,
-                'status' => $invoice->status,
+                'subscription_id' => $dbSubscription->id,
                 'invoice_date' => Carbon::createFromTimestamp($invoice->created),
+                'status' => $invoice->status,
             ]);
 
             // Store Transaction in Database
             if ($invoice->payment_intent) {
                 $paymentIntent = Stripe\PaymentIntent::retrieve($invoice->payment_intent);
-                $user->transactions()->create([
+                $dbInvoice->transactions()->create([
+                    'invoice_id' => $dbInvoice->id / 100,
                     'stripe_payment_id' => $paymentIntent->id,
-                    'amount' => $paymentIntent->amount / 100,
-                    'currency' => $paymentIntent->currency,
-                    'type' => $data['type'],
-                    'status' => $paymentIntent->status,
                     'paid_at' => Carbon::createFromTimestamp($paymentIntent->created),
+                    'status' => $paymentIntent->status,
                 ]);
             }
 
-            // DB::commit();
-
+            DB::commit();
+            // DB::rollBack();
             Auth::login($user);
             return redirect()->route('dashboard')->with('success', 'Subscription successfully created!');
-        // } catch (\Exception $e) {
-        //     DB::rollBack();
-        //     return redirect()->back()->with('error', 'Error: ' . $e->getMessage());
-        // }
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->back()->with('error', 'Error: ' . $e->getMessage());
+        }
     }
 }

@@ -33,7 +33,7 @@
                         <div class="card">
                             <div class="card-body">
                                 <div class="d-flex justify-content-between align-items-baseline">
-                                    <h6 class="card-title mb-0">Total Subscriptions</h6>
+                                    <h6 class="card-title mb-0">Total Donations</h6>
                                     <a href="{{ route('admin.subscriptions.index') }}" class="btn btn-sm btn-primary">View</a>
                                 </div>
                                 <h3 class="mb-2 ms-4">{{ $total_donations }}</h3>
