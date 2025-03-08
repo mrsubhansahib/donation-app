@@ -12,6 +12,7 @@ class Invoice extends Model
     protected $fillable = [
         'subscription_id',
         'stripe_invoice_id',
+        'amount',
         'invoice_date',
         'status',
     ];

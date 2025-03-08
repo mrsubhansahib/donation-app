@@ -56,13 +56,14 @@ class User extends Authenticatable
         return $this->hasMany(Subscription::class);
     }
     //add this function to the User model
-    public function transactions()
-    {
-        return $this->hasMany(Transaction::class);
-    }
 
     public function invoices()
     {
-        return $this->hasMany(Invoice::class);
+        return $this->hasManyThrough(Invoice::class, Subscription::class, 'user_id', 'subscription_id', 'id', 'id');
+    }
+
+    public function transactions()
+    {
+        return $this->hasManyThrough(Transaction::class, Invoice::class, 'subscription_id', 'invoice_id', 'id', 'id');
     }
 }

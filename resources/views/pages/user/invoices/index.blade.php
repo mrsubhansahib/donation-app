@@ -10,8 +10,7 @@
                         <tr>
                             <th>ID</th>
                             <th>Donation Type</th>
-                            <th>Amount Due</th>
-                            <th>Amount Paid</th>
+                            <th>Amount</th>
                             <th>Status</th>
                             <th>Invoice Date</th>
                             <th>Actions</th>
@@ -23,30 +22,21 @@
                                 <tr>
                                     <td>{{ $invoice->id }}</td>
                                     <td>
-                                        @if ($invoice->type == 'day')
+                                        @if ($invoice->subscription->type == 'day')
                                             Daily
-                                        @elseif($invoice->type == 'week')
+                                        @elseif($invoice->subscription->type == 'week')
                                             Weekly
-                                        @elseif($invoice->type == 'month')
+                                        @elseif($invoice->subscription->type == 'month')
                                             Monthly
                                         @endif
                                     </td>
                                     <td>
-                                        @if ($invoice->currency == 'usd')
-                                            {{ $invoice->amount_due ? number_format($invoice->amount_due, 2) : '0' }} $
-                                        @elseif($invoice->currency == 'gbp')
-                                            {{ $invoice->amount_due ? number_format($invoice->amount_due, 2) : '0' }} £
-                                        @elseif($invoice->currency == 'eur')
-                                            {{ $invoice->amount_due ? number_format($invoice->amount_due, 2) : '0' }} €
-                                        @endif
-                                    </td>
-                                    <td>
-                                        @if ($invoice->currency == 'usd')
-                                            {{ $invoice->amount_paid ? number_format($invoice->amount_paid, 2) : '0' }} $
-                                        @elseif($invoice->currency == 'gbp')
-                                            {{ $invoice->amount_paid ? number_format($invoice->amount_paid, 2) : '0' }} £
-                                        @elseif($invoice->currency == 'eur')
-                                            {{ $invoice->amount_paid ? number_format($invoice->amount_paid, 2) : '0' }} €
+                                        @if ($invoice->subscription->currency == 'usd')
+                                            {{ number_format($invoice->amount / 100, 2) }} $
+                                        @elseif($invoice->subscription->currency == 'gbp')
+                                            {{ number_format($invoice->amount / 100, 2) }} £
+                                        @elseif($invoice->subscription->currency == 'eur')
+                                            {{ number_format($invoice->amount / 100, 2) }} €
                                         @endif
                                     </td>
                                     <td>

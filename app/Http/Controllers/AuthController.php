@@ -43,7 +43,11 @@ class AuthController extends Controller
         $total_donations = Subscription::all()->count();
         // $total_transactions = Transaction::all()->count();
         $total_invoices = Invoice::all()->count();
-        return view('dashboard', compact('total_donors', 'total_donations', 'total_invoices'));
+        $user = auth()->user();
+        $my_transactions = Transaction::whereHas('invoice.subscription', function ($query) use ($user) {
+            $query->where('user_id', $user->id);
+        })->latest()->get();
+        return view('dashboard', compact('total_donors', 'total_donations', 'total_invoices', 'my_transactions'));
     }
 
     /**

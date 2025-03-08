@@ -11,7 +11,7 @@
                             <th>ID</th>
                             <th>Name</th>
                             <th>Email</th>
-                            <th>Total Donations</th>
+                            {{-- <th>Total Donations</th> --}}
                             <th>Active Donations</th>
                             <th>Actions</th>
                         </tr>
@@ -23,9 +23,9 @@
                                     <td>{{ $donor->id }}</td>
                                     <td>{{ $donor->first_name }} {{ $donor->last_name }}</td>
                                     <td>{{ $donor->email }}</td>
-                                    <td>
-                                        ${{ $donor->subscriptions->count() }}
-                                    </td>
+                                    {{-- <td>
+                                        {{ $donor->invoices()->sum('amount') / 100}}
+                                    </td> --}}
                                     <td>
                                         {{ $donor->subscriptions->where('status', 'active')->count() }}
                                     </td>

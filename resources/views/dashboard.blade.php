@@ -73,7 +73,7 @@
                                     <h6 class="card-title mb-0">My Transactions</h6>
                                     <a href="{{ route('user.transactions.index') }}" class="btn btn-sm btn-primary">View</a>
                                 </div>
-                                <h3 class="mb-2 ms-4">{{ auth()->user()->transactions()->count() }}</h3>
+                                <h3 class="mb-2 ms-4">{{ count($my_transactions )}}</h3>
                             </div>
                         </div>
                     </div>

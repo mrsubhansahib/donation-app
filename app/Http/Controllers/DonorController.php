@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Invoice;
+use App\Transaction;
 use App\User;
 use Illuminate\Http\Request;
 
@@ -21,7 +23,13 @@ class DonorController extends Controller
     {
 
         $user = User::find($id);
-        $user->load(['subscriptions', 'invoices', 'transactions']);
-        return view('pages.admin.donors.show', compact('user'));
+        $user->load(['subscriptions']);
+        $transactions = $transactions = Transaction::whereHas('invoice.subscription', function ($query) use ($user) {
+            $query->where('user_id', $user->id);
+        })->latest()->get();
+        $invoices = Invoice::whereHas('subscription', function ($query) use ($user) {
+            $query->where('user_id', $user->id);
+        })->with('subscription')->latest()->get();
+        return view('pages.admin.donors.show', compact('user', 'transactions', 'invoices'));
     }
 }

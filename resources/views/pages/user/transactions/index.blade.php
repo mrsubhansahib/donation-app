@@ -12,7 +12,7 @@
                             <th>Donation Type</th>
                             <th>Amount</th>
                             <th>Status</th>
-                            <th>Paid At</th>
+                            <th>Date</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
@@ -21,29 +21,29 @@
                             @foreach ($transactions as $transaction)
                                 <tr>
                                     <td>{{ $transaction->id }}</td>
-
                                     <td>
-                                        @if ($subscription->type == 'day')
+                                        @if ($transaction->invoice->subscription->type == 'day')
                                             Daily
-                                        @elseif($subscription->type == 'week')
+                                        @elseif($transaction->invoice->subscription->type == 'week')
                                             Weekly
-                                        @elseif($subscription->type == 'month')
+                                        @elseif($transaction->invoice->subscription->type == 'month')
                                             Monthly
                                         @endif
                                     </td>
                                     <td>
-                                        @if ($transaction->currency == 'usd')
-                                            {{ $transaction->amount ? number_format($transaction->amount, 2) : '0' }} $
-                                        @elseif($transaction->currency == 'gbp')
-                                            {{ $transaction->amount ? number_format($transaction->amount, 2) : '0' }} £
-                                        @elseif($transaction->currency == 'eur')
-                                            {{ $transaction->amount ? number_format($transaction->amount, 2) : '0' }} €
+                                        @if ($transaction->invoice->subscription->currency == 'usd')
+                                            {{ $transaction->invoice->amount / 100 }} $
+                                        @elseif($transaction->invoice->subscription->currency == 'gbp')
+                                            {{ $transaction->invoice->amount / 100 }} £
+                                        @elseif($transaction->invoice->subscription->currency == 'eur')
+                                            {{ $transaction->invoice->amount / 100 }} €
                                         @endif
                                     </td>
-                                    <td>
-                                        {{ ucfirst($transaction->status) }}
-                                    </td>
-                                    <td>{{ \Carbon\Carbon::parse($transaction->paid_at)->format('Y-m-d H:i') }}</td>
+                                    <td>{{ $transaction->paid_at }}</td>
+                                    <td><span
+                                            class="badge bg-{{ $transaction->status === 'succeeded' ? 'success' : 'danger' }}">
+                                            {{ ucfirst($transaction->status) }}
+                                        </span></td>
                                     <td>
 
                                         {{-- <a href="{{ route('user.transactions.show', $transaction->id) }}" class="btn btn-info btn-sm">View</a> --}}

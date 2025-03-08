@@ -213,7 +213,7 @@
         function setMinDate() {
             const today = new Date();
             const tomorrow = new Date();
-            tomorrow.setDate(today.getDate() + 1); // Set to one day after today
+            tomorrow.setDate(today.getDate() + 2); // Set to one day after today
 
             const oneMonthLater = new Date();
             oneMonthLater.setMonth(today.getMonth() + 1); // Set to one month from today

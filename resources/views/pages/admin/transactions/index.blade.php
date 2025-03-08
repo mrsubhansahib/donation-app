@@ -8,12 +8,13 @@
                 <table class="table table-bordered table-striped">
                     <thead class="thead-dark">
                         <tr>
-                            <th>Name</th>
+                            <th>Id</th>
                             <th>Email</th>
+                            <th>Donation Type</th>
                             <th>Amount</th>
-                            <th>Currency</th>
-                            <th>Date</th>
                             <th>Status</th>
+                            <th>Date</th>
+                            <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -21,10 +22,26 @@
                         @if (count($transactions) > 0)
                             @foreach ($transactions as $transaction)
                                 <tr>
-                                    <td>{{ $transaction->user->name ?? 'N/A' }}</td>
-                                    <td>{{ $transaction->user->email ?? 'N/A' }}</td>
-                                    <td>${{ number_format($transaction->amount, 2) }}</td>
-                                    <td>{{ strtoupper($transaction->currency) }}</td>
+                                    <td>{{ $transaction->id }}</td>
+                                    <td>{{ $transaction->invoice->subscription->user->email ?? 'N/A' }}</td>
+                                    <td>
+                                        @if ($transaction->invoice->subscription->type == 'day')
+                                            Daily
+                                        @elseif($transaction->invoice->subscription->type == 'week')
+                                            Weekly
+                                        @elseif($transaction->invoice->subscription->type == 'month')
+                                            Monthly
+                                        @endif
+                                    </td>
+                                    <td>
+                                        @if ($transaction->invoice->subscription->currency == 'usd')
+                                            {{ $transaction->invoice->amount /100 }} $
+                                        @elseif($transaction->invoice->subscription->currency == 'gbp')
+                                            {{ $transaction->invoice->amount /100 }} £
+                                        @elseif($transaction->invoice->subscription->currency == 'eur')
+                                            {{ $transaction->invoice->amount /100 }} €
+                                        @endif
+                                    </td>
                                     <td>{{ $transaction->paid_at}}</td>
                                     <td><span
                                             class="badge bg-{{ $transaction->status === 'succeeded' ? 'success' : 'danger' }}">
@@ -41,7 +58,7 @@
                             @endforeach
                         @else
                             <tr>
-                                <td colspan="7">
+                                <td colspan="8">
 
                                     <p class="text-center">No transactions found.</p>
                                 </td>
