@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Invoice as AppInvoice;
 use App\Transaction;
 use App\User;
 use Carbon\Carbon;
@@ -31,17 +32,13 @@ class TransactionController extends Controller
 
                 $email = $invoice->customer_email ?? 'N/A';
                 $user = User::where('email', $email)->first();
-                // dd($user);
                 // Check if transaction already exists
-                if (!Transaction::where('stripe_payment_id', $charge->id)->exists()) {
+                if (AppInvoice::where('id',$invoice->id)->exists()&&!Transaction::where('stripe_payment_id', $charge->id)->exists()) {
                     Transaction::create([
-                        'user_id'           => $user->id ?? 1,
+                        'invoice_id' =>$invoice->id,
                         'stripe_payment_id' => $charge->id,
-                        'amount'            => $charge->amount / 100, // Convert to proper format
-                        'currency'          => $charge->currency,
                         'status'            => $charge->status,
                         'paid_at'           => Carbon::createFromTimestamp($charge->created),
-                        'type'              => 'payment', // You can modify this based on use case
                     ]);
                 }
             }

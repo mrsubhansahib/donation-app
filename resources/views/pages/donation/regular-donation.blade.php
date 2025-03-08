@@ -19,9 +19,10 @@
 </head>
 
 <body style="background: #e9eae4;">
-    <h1 class="text-center text-light p-5" style="background: #909d97;font-size: 44px;">Daily / Weekly / Monthly Donation</h1>
+    <h1 class="text-center text-light p-5" style="background: #909d97;font-size: 44px;">Daily / Weekly / Monthly
+        Donation</h1>
     <div class="container  mt-3 w-75">
-      
+
 
 
         <form action="{{ route('stripe.post') }}" method="POST" id="payment-form" class="mb-5">
@@ -207,25 +208,36 @@
         }
     </script>
 
-<script>
-    // Function to set the minimum date for both inputs
-    function setMinDate() {
-        const today = new Date().toISOString().split('T')[0]; // Get today's date in YYYY-MM-DD format
-        const startDateInput = document.getElementById('start_date');
-        const endDateInput = document.getElementById('cancellation');
+    <script>
+        // Function to set the minimum date for both inputs
+        function setMinDate() {
+            const today = new Date();
+            const tomorrow = new Date();
+            tomorrow.setDate(today.getDate() + 1); // Set to one day after today
 
-        // Set the min attribute for both date inputs
-        startDateInput.min = today;
-        endDateInput.min = today;
+            const oneMonthLater = new Date();
+            oneMonthLater.setMonth(today.getMonth() + 1); // Set to one month from today
 
-        // Set default values to today and one month from today
-        startDateInput.value = today; // Set start date to today
-        endDateInput.value = new Date(new Date().setMonth(new Date().getMonth() + 1)).toISOString().split('T')[0]; // Set end date to one month from today
-    }
+            const formattedToday = today.toISOString().split('T')[0]; // Format YYYY-MM-DD
+            const formattedTomorrow = tomorrow.toISOString().split('T')[0]; // Format YYYY-MM-DD
+            const formattedOneMonthLater = oneMonthLater.toISOString().split('T')[0]; // Format YYYY-MM-DD
 
-    // Call the function when the page loads
-    window.onload = setMinDate;
-</script>
+            const startDateInput = document.getElementById('start_date');
+            const endDateInput = document.getElementById('cancellation');
+
+            // Set min values
+            startDateInput.min = formattedToday;
+            endDateInput.min = formattedTomorrow;
+
+            // Set default values
+            startDateInput.value = formattedToday; // Default start date is today
+            endDateInput.value = formattedOneMonthLater; // Default end date is one month later
+        }
+
+
+        // Call the function when the page loads
+        window.onload = setMinDate;
+    </script>
 
 </body>
 

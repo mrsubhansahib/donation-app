@@ -141,14 +141,16 @@ class StripePaymentController extends Controller
                 ? Carbon::now()->addMinute()->timestamp
                 : $startDate->timestamp;
 
-            // Create Stripe Subscription
+            // Create Stripe Subscription with Instant Charge
             $subscription = Stripe\Subscription::create([
                 'customer' => $customer->id,
                 'items' => [['price' => $price->id]],
                 'billing_cycle_anchor' => $billingAnchor,
-                'expand' => ['latest_invoice.payment_intent'],
                 'cancel_at' => $cancelAt,
+                'payment_behavior' => 'default_incomplete', // Ensures a PaymentIntent is created
+                'expand' => ['latest_invoice.payment_intent'],
             ]);
+            
 
             // Store Subscription in Database
             $dbSubscription = $user->subscriptions()->create([
@@ -163,29 +165,10 @@ class StripePaymentController extends Controller
                 'canceled_at' => $subscription->cancel_at ? Carbon::createFromTimestamp($subscription->cancel_at) : null,
             ]);
 
-            $invoice = $subscription->latest_invoice;
-
-            // Store Invoice in Database
-            $dbInvoice = $dbSubscription->invoices()->create([
-                'stripe_invoice_id' => $invoice->id,
-                'subscription_id' => $dbSubscription->id,
-                'invoice_date' => Carbon::createFromTimestamp($invoice->created),
-                'status' => $invoice->status,
-            ]);
-
-            // Store Transaction in Database
-            if ($invoice->payment_intent) {
-                $paymentIntent = Stripe\PaymentIntent::retrieve($invoice->payment_intent);
-                $dbInvoice->transactions()->create([
-                    'invoice_id' => $dbInvoice->id / 100,
-                    'stripe_payment_id' => $paymentIntent->id,
-                    'paid_at' => Carbon::createFromTimestamp($paymentIntent->created),
-                    'status' => $paymentIntent->status,
-                ]);
-            }
 
             DB::commit();
             // DB::rollBack();
+
             Auth::login($user);
             return redirect()->route('dashboard')->with('success', 'Subscription successfully created!');
         } catch (\Exception $e) {
