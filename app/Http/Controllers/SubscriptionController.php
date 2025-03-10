@@ -3,13 +3,17 @@
 namespace App\Http\Controllers;
 
 use App\Subscription;
+use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Stripe\Stripe;
 
 class SubscriptionController extends Controller
 {
     public function index()
     {
+        
+
         $user = auth()->user();
 
         if ($user->role == 'admin') {

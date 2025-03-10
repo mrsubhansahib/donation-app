@@ -13,25 +13,25 @@ class InvoiceController extends Controller
 {
     public function index()
     {
-        Stripe::setApiKey(env('STRIPE_SECRET'));
+        // Stripe::setApiKey(env('STRIPE_SECRET'));
 
-        // Fetch all invoices from Stripe
-        $stripeInvoices = \Stripe\Invoice::all(['limit' => 10]);
+        // // Fetch all invoices from Stripe
+        // $stripeInvoices = \Stripe\Invoice::all(['limit' => 10]);
 
-        foreach ($stripeInvoices->autoPagingIterator() as $stripeInvoice) {
-            $subscription = Subscription::where('stripe_subscription_id', $stripeInvoice->subscription)->first();
+        // foreach ($stripeInvoices->autoPagingIterator() as $stripeInvoice) {
+        //     $subscription = Subscription::where('stripe_subscription_id', $stripeInvoice->subscription)->first();
 
-            if ($subscription && !Invoice::where('stripe_invoice_id', $stripeInvoice->id)->exists() && $stripeInvoice->amount_due) {
-                // Save invoice to DB
-                Invoice::create([
-                    'subscription_id'   => $subscription->id,
-                    'stripe_invoice_id' => $stripeInvoice->id,
-                    'amount' => $stripeInvoice->amount_due,
-                    'invoice_date'      => Carbon::createFromTimestamp($stripeInvoice->created),
-                    'status'            => $stripeInvoice->status,
-                ]);
-            }
-        }
+        //     if ($subscription && !Invoice::where('stripe_invoice_id', $stripeInvoice->id)->exists() && $stripeInvoice->amount_due) {
+        //         // Save invoice to DB
+        //         Invoice::create([
+        //             'subscription_id'   => $subscription->id,
+        //             'stripe_invoice_id' => $stripeInvoice->id,
+        //             'amount' => $stripeInvoice->amount_due,
+        //             'invoice_date'      => Carbon::createFromTimestamp($stripeInvoice->created),
+        //             'status'            => $stripeInvoice->status,
+        //         ]);
+        //     }
+        // }
 
         // Retrieve invoices based on user role
         $user = auth()->user();

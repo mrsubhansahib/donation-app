@@ -20,31 +20,30 @@ class TransactionController extends Controller
 {
     public function index()
     {
-        Stripe::setApiKey(env('STRIPE_SECRET'));
+        // Stripe::setApiKey(env('STRIPE_SECRET'));
 
-        $paymentIntents = PaymentIntent::all(['limit' => 10]);
+        // $paymentIntents = PaymentIntent::all(['limit' => 100]);
 
-        foreach ($paymentIntents->data as $paymentIntent) {
-            $charges = Charge::all(['payment_intent' => $paymentIntent->id]);
+        // foreach ($paymentIntents->data as $paymentIntent) {
+        //     $charges = Charge::all(['payment_intent' => $paymentIntent->id]);
 
-            foreach ($charges->data as $charge) {
-                $invoice = $charge->invoice ? Invoice::retrieve($charge->invoice) : null;
+        //     foreach ($charges->data as $charge) {
+        //         $invoice = $charge->invoice ? Invoice::retrieve($charge->invoice) : null;
 
-                $email = $invoice->customer_email ?? 'N/A';
-                $user = User::where('email', $email)->first();
-                $invoice = AppInvoice::where('stripe_invoice_id', $invoice->id)->first();
-                // dd($invoice);
-                // Check if transaction already exists
-                if ($invoice && !Transaction::where('stripe_payment_id', $charge->id)->exists()) {
-                    Transaction::create([
-                        'invoice_id' => $invoice->id,
-                        'stripe_payment_id' => $charge->id,
-                        'status'            => $charge->status,
-                        'paid_at'           => Carbon::createFromTimestamp($charge->created),
-                    ]);
-                }
-            }
-        }
+        //         $email = $invoice->customer_email ?? 'N/A';
+        //         $user = User::where('email', $email)->first();
+        //         $invoice = AppInvoice::where('stripe_invoice_id', $invoice->id)->first();
+        //         // Check if transaction already exists
+        //         if ($invoice && !Transaction::where('stripe_payment_id', $charge->id)->exists()) {
+        //             Transaction::create([
+        //                 'invoice_id' => $invoice->id,
+        //                 'stripe_payment_id' => $charge->id,
+        //                 'status'            => $charge->status,
+        //                 'paid_at'           => Carbon::createFromTimestamp($charge->created),
+        //             ]);
+        //         }
+        //     }
+        // }
 
         $user = auth()->user();
 

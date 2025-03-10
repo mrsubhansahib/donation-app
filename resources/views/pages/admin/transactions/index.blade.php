@@ -35,24 +35,23 @@
                                     </td>
                                     <td>
                                         @if ($transaction->invoice->subscription->currency == 'usd')
-                                            {{ $transaction->invoice->amount /100 }} $
+                                            {{ $transaction->invoice->amount / 100 }} $
                                         @elseif($transaction->invoice->subscription->currency == 'gbp')
-                                            {{ $transaction->invoice->amount /100 }} £
+                                            {{ $transaction->invoice->amount / 100 }} £
                                         @elseif($transaction->invoice->subscription->currency == 'eur')
-                                            {{ $transaction->invoice->amount /100 }} €
+                                            {{ $transaction->invoice->amount / 100 }} €
                                         @endif
                                     </td>
-                                    <td>{{ $transaction->paid_at}}</td>
                                     <td><span
                                             class="badge bg-{{ $transaction->status === 'succeeded' ? 'success' : 'danger' }}">
                                             {{ ucfirst($transaction->status) }}
                                         </span></td>
+                                    <td>{{ \Carbon\Carbon::parse($transaction->paid_at)->format('d-m-Y') }}</td>
                                     <td>
-{{-- 
+                                        {{-- 
                                         <a href="{{ route('user.transactions.show', $transaction->id) }}"
                                             class="btn btn-info btn-sm">View</a> --}}
-                                        <a href="#" onclick="alert('Coming Soon!')"
-                                            class="btn btn-info btn-sm">View</a>
+                                        <a href="#" onclick="alert('Coming Soon!')" class="btn btn-info btn-sm">View</a>
                                     </td>
                                 </tr>
                             @endforeach

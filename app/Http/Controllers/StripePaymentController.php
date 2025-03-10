@@ -146,11 +146,17 @@ class StripePaymentController extends Controller
                 'customer' => $customer->id,
                 'items' => [['price' => $price->id]],
                 'billing_cycle_anchor' => $billingAnchor,
-                'cancel_at' => $cancelAt,
-                'payment_behavior' => 'default_incomplete', // Ensures a PaymentIntent is created
+                'cancel_at_period_end' => true, // Cancels at the end of billing cycle
+                'payment_behavior' => 'default_incomplete',
                 'expand' => ['latest_invoice.payment_intent'],
             ]);
-            
+            \Stripe\Subscription::update(
+                $subscription->id,
+                [
+                    'cancel_at' => $cancelAt,
+                    'proration_behavior' => 'none' // Prevents Stripe from adjusting the amount
+                ]
+            );                        
 
             // Store Subscription in Database
             $dbSubscription = $user->subscriptions()->create([

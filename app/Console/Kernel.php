@@ -13,7 +13,8 @@ class Kernel extends ConsoleKernel
      * @var array
      */
     protected $commands = [
-        //
+        \App\Console\Commands\FetchInvoices::class,
+        \App\Console\Commands\FetchTransactions::class,
     ];
 
     /**
@@ -24,9 +25,10 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        $schedule->call(function () {
-            app('App\Http\Controllers\TransactionController')->storeTransactionsFromStripe();
-        })->everyMinute();
+        $schedule->command('update:subscriptions')->hourly()->appendOutputTo(storage_path('logs/update_subscriptions.log'));
+        $schedule->command('fetch:invoices')->everyMinute()->appendOutputTo(storage_path('logs/fetch_invoices.log'));
+        $schedule->command('update:invoices')->hourly()->appendOutputTo(storage_path('logs/update_invoices.log'));
+        $schedule->command('fetch:transactions')->everyMinute()->appendOutputTo(storage_path('logs/fetch_transactions.log'));
     }
 
     /**
@@ -36,7 +38,7 @@ class Kernel extends ConsoleKernel
      */
     protected function commands()
     {
-        $this->load(__DIR__.'/Commands');
+        $this->load(__DIR__ . '/Commands');
 
         require base_path('routes/console.php');
     }

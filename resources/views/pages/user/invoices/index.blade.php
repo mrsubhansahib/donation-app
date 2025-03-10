@@ -42,7 +42,7 @@
                                     <td>
                                         {{ ucfirst($invoice->status) }}
                                     </td>
-                                    <td>{{ \Carbon\Carbon::parse($invoice->invoice_date)->format('Y-m-d H:i') }}</td>
+                                    <td>{{ \Carbon\Carbon::parse($invoice->invoice_date)->format('d-m-Y H:i') }}</td>
                                     <td>
                                         {{-- <a href="{{ route('user.invoices.show', $invoice->id) }}" class="btn btn-info btn-sm">View</a> --}}
                                         <a href="#" onclick="alert('Coming Soon!')" class="btn btn-info btn-sm">View</a>

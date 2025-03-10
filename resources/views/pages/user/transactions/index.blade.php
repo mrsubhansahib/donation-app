@@ -39,11 +39,11 @@
                                             {{ $transaction->invoice->amount / 100 }} €
                                         @endif
                                     </td>
-                                    <td>{{ $transaction->paid_at }}</td>
                                     <td><span
-                                            class="badge bg-{{ $transaction->status === 'succeeded' ? 'success' : 'danger' }}">
-                                            {{ ucfirst($transaction->status) }}
-                                        </span></td>
+                                        class="badge bg-{{ $transaction->status === 'succeeded' ? 'success' : 'danger' }}">
+                                        {{ ucfirst($transaction->status) }}
+                                    </span></td>
+                                    <td>{{ \Carbon\Carbon::parse($transaction->paid_at)->format('d-m-Y H:i' ) }}</td>
                                     <td>
 
                                         {{-- <a href="{{ route('user.transactions.show', $transaction->id) }}" class="btn btn-info btn-sm">View</a> --}}
