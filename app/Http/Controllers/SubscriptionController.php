@@ -7,6 +7,7 @@ use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Stripe\Stripe;
+use Stripe\Subscription as StripeSubscription;
 
 class SubscriptionController extends Controller
 {
@@ -39,5 +40,17 @@ class SubscriptionController extends Controller
             $subscription = Auth::user()->subscriptions()->findOrFail($id);
             return view('pages.user.subscriptions.show', compact('subscription'));
         }
+    }
+    public function cancel_subscription($id)
+    {
+        Stripe::setApiKey(env('STRIPE_SECRET'));
+        $subscription=StripeSubscription::retrieve($id);
+        $subscription->cancel();
+        $subscription = Subscription::where('stripe_subscription_id', $id)->first();
+        $subscription->update([
+            'status' => 'canceled',
+            'canceled_at' => now()
+        ]);
+        return redirect()->back()->with('success', 'Subscription canceled successfully');
     }
 }

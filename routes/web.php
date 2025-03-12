@@ -49,6 +49,7 @@ Route::middleware(['auth'])->group(function () {
         Route::prefix('subscriptions')->name('subscriptions.')->group(function () {
             Route::get('/', [SubscriptionController::class, 'index'])->name('index'); // Show all subscriptions
             Route::get('/{subscription}', [SubscriptionController::class, 'show'])->name('show'); // Show single subscription details
+            Route::get('/{subscription}/cancel', [SubscriptionController::class, 'cancel_subscription'])->name('cancel'); // Cancel subscription
         });
 
         // Invoice Routes

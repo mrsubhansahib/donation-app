@@ -142,21 +142,18 @@ class StripePaymentController extends Controller
                 : $startDate->timestamp;
 
             // Create Stripe Subscription with Instant Charge
-            $subscription = Stripe\Subscription::create([
-                'customer' => $customer->id,
-                'items' => [['price' => $price->id]],
-                'billing_cycle_anchor' => $billingAnchor,
-                'cancel_at_period_end' => true, // Cancels at the end of billing cycle
-                'payment_behavior' => 'default_incomplete',
-                'expand' => ['latest_invoice.payment_intent'],
-            ]);
-            \Stripe\Subscription::update(
-                $subscription->id,
+            $subscription = Stripe\Subscription::create(
                 [
+                    'customer' => $customer->id,
+                    'items' => [['price' => $price->id]],
+                    'billing_cycle_anchor' => $billingAnchor,
+                    // 'cancel_at_period_end' => true, // Cancels at the end of billing cycle
+                    'payment_behavior' => 'default_incomplete',
+                    'expand' => ['latest_invoice.payment_intent'],
                     'cancel_at' => $cancelAt,
                     'proration_behavior' => 'none' // Prevents Stripe from adjusting the amount
                 ]
-            );                        
+            );
 
             // Store Subscription in Database
             $dbSubscription = $user->subscriptions()->create([

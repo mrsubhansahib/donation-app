@@ -49,6 +49,11 @@
                                     </td>
                                     <td>
                                         {{-- <a href="{{ route('user.subscriptions.show', $subscription->id) }}" class="btn btn-info btn-sm">View</a> --}}
+                                        @if ($subscription->status == 'active')
+                                            <a href="{{ route('user.subscriptions.cancel', $subscription->stripe_subscription_id) }}" class="btn btn-danger btn-sm">Cancel</a>
+                                            @else
+                                            <a href="#" class="btn btn-danger disabled btn-sm">Cancel</a>
+                                        @endif
                                         <a href="#" onclick="alert('Coming Soon!')" class="btn btn-info btn-sm">View</a>
                                     </td>
                                 </tr>
