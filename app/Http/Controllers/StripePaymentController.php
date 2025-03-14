@@ -176,7 +176,26 @@ class StripePaymentController extends Controller
             return redirect()->route('dashboard')->with('success', 'Subscription successfully created!');
         } catch (\Exception $e) {
             DB::rollBack();
-            return redirect()->back()->with('error', 'Error: ' . $e->getMessage());
+
+            // Check if the error message contains the currency conflict
+            if (strpos($e->getMessage(), 'You cannot combine currencies on a single customer') !== false) {
+                // Fetch the existing currency from the Stripe customer subscriptions or transactions
+                $user = auth()->user(); // Assuming the user is authenticated
+                $existingCurrency = 'a different currency'; // Default message if currency isn't found
+
+                if ($user && $user->stripe_id) {
+                    $stripe = new \Stripe\StripeClient(env('STRIPE_SECRET'));
+                    $customer = $stripe->customers->retrieve($user->stripe_id, ['expand' => ['subscriptions']]);
+
+                    if (!empty($customer->subscriptions->data)) {
+                        $existingCurrency = strtoupper($customer->subscriptions->data[0]->currency);
+                    }
+                }
+
+                return redirect()->back()->withInput()->with('error', "You have already donated in {$existingCurrency}. Please continue donations in the same currency.");
+            }
+
+            return redirect()->back()->withInput()->with('error', 'Error: ' . $e->getMessage());
         }
     }
 }

@@ -21,9 +21,12 @@
 <body style="background: #e9eae4;">
     <h1 class="text-center text-light p-5" style="background: #909d97;font-size: 44px;">Daily / Weekly / Monthly
         Donation</h1>
+    @if (session('error'))
+        <div class="alert alert-danger">
+            {{ session('error') }}
+        </div>
+    @endif
     <div class="container  mt-3 w-75">
-
-
 
         <form action="{{ route('stripe.post') }}" method="POST" id="payment-form" class="mb-5">
             @csrf
@@ -33,32 +36,33 @@
                 <div class="col-md-4">
                     <label for="currency">Currency</label>
                     <select name="currency" id="currency" class="form-control">
-                        <option selected value="gbp">£</option>
-                        <option value="usd">$</option>
-                        <option value="eur">€</option>
+                        <option selected value="gbp" {{ old('currency') == 'gbp' ? 'selected' : '' }}>£</option>
+                        <option value="usd" {{ old('currency') == 'usd' ? 'selected' : '' }}>$</option>
+                        <option value="eur" {{ old('currency') == 'eur' ? 'selected' : '' }}>€</option>
                     </select>
                 </div>
                 <div class="col-md-4">
                     <label for="amount">Amount</label>
-                    <input type="number" name="amount" id="amount" class="form-control" required>
+                    <input type="number" name="amount" id="amount" value="{{ old('amount') }}" class="form-control"
+                        required>
                 </div>
                 <div class="col-md-4">
                     <label for="type">Type</label>
                     <select name="type" id="type" class="form-control">
-                        <option selected value="day">Daily</option>
-                        <option disabled value="week">Weekly</option>
-                        <option disabled value="month">Monthly</option>
+                        <option selected value="day" {{ old('type') == 'day' ? 'selected' : '' }}>Daily</option>
+                        <option disabled value="week" {{ old('type') == 'week' ? 'selected' : '' }}>Weekly</option>
+                        <option disabled value="month" {{ old('type') == 'month' ? 'selected' : '' }}>Monthly</option>
                     </select>
                 </div>
                 <div class="col-md-6 mt-3">
                     <label for="start_date">Start Date</label>
-                    <input type="date" name="start_date" value="<?php echo date('Y-m-d'); ?>" id="start_date"
-                        class="form-control" required>
+                    <input type="date" name="start_date" value="{{ old('start_date', date('Y-m-d')) }}"
+                        id="start_date" class="form-control" required>
                 </div>
                 <div class="col-md-6 mt-3">
                     <label for="cancellation">End Date</label>
                     <input type="date" name="cancellation" id="cancellation" class="form-control"
-                        value="<?php echo date('Y-m-d', strtotime('+1 month')); ?>" required>
+                        value="{{ old('cancellation', date('Y-m-d', strtotime('+1 month'))) }}" required>
                 </div>
             </div>
             <h2 class="mt-4 mb-2">Address Details</h2>
@@ -75,15 +79,18 @@
                 </div>
                 <div class="col-md-10">
                     <label for="first_name">First Name</label>
-                    <input type="text" name="first_name" id="first_name" class="form-control" required>
+                    <input type="text" name="first_name" id="first_name" value="{{ old('first_name') }}"
+                        class="form-control" required>
                 </div>
                 <div class="col-md-6 mt-3">
                     <label for="last_name">Last Name</label>
-                    <input type="text" name="last_name" id="last_name" class="form-control" required>
+                    <input type="text" name="last_name" id="last_name" class="form-control"
+                        value="{{ old('last_name') }}" required>
                 </div>
                 <div class="col-md-6 mt-3">
                     <label for="email">Email</label>
-                    <input type="email" name="email" id="email" class="form-control" required>
+                    <input type="email" name="email" id="email" class="form-control"
+                        value="{{ old('email') }}" required>
                 </div>
                 <div class="col-md-6 mt-3">
                     <label for="password">Password</label>
@@ -91,19 +98,23 @@
                 </div>
                 <div class="col-md-6 mt-3">
                     <label for="country">Country</label>
-                    <input type="text" name="country" id="country" class="form-control" required>
+                    <input type="text" name="country" id="country" class="form-control"
+                        value="{{ old('country') }}" required>
                 </div>
                 <div class="col-md-4 mt-3">
                     <label for="city">City</label>
-                    <input type="text" name="city" id="city" class="form-control" required>
+                    <input type="text" name="city" id="city" class="form-control"
+                        value="{{ old('city') }}" required>
                 </div>
                 <div class="col-md-4 mt-3">
                     <label for="address">Address</label>
-                    <input type="text" name="address" id="address" class="form-control" required>
+                    <input type="text" name="address" id="address" class="form-control"
+                        value="{{ old('address') }}" required>
                 </div>
                 <div class="col-md-4 mt-3">
                     <label for="zip_code">ZipCode</label>
-                    <input type="text" name="zip_code" id="zip_code" class="form-control" required>
+                    <input type="text" name="zip_code" id="zip_code" class="form-control"
+                        value="{{ old('zip_code') }}" required>
                 </div>
 
                 <div class="col-md-12 mt-3">
