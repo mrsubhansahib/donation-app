@@ -46,7 +46,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach ($user->subscriptions as $subscription)
+                        @foreach ($subscriptions as $subscription)
                             <tr>
                                 <td>{{ $loop->iteration }}</td>
                                 <td>

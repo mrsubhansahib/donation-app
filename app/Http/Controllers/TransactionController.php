@@ -62,13 +62,14 @@ class TransactionController extends Controller
         $user = auth()->user();
 
         if ($user->role == 'admin') {
-            $transactions = Transaction::all();
+            // $transactions = Transaction::all();
+            $transactions = Transaction::with('invoice.subscription.user')->orderBy('paid_at', 'desc')->get();
             return view('pages.admin.transactions.index', compact('transactions'));
         } else {
             // User sees only their invoices
             $transactions = Transaction::whereHas('invoice.subscription', function ($query) use ($user) {
                 $query->where('user_id', $user->id);
-            })->latest()->get();
+            })->orderBy('paid_at', 'desc')->get();
             return view('pages.user.transactions.index', compact('transactions'));
         }
     }

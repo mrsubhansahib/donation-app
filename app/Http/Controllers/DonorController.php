@@ -14,7 +14,7 @@ class DonorController extends Controller
         $user = auth()->user();
 
 
-        $donors = User::where('role', 'donar')->get();
+        $donors = User::where('role', 'donar')->orderBy('created_at', 'desc')->get();
         // dd($donors);
         return view('pages.admin.donors.index', compact('donors'));
     }
@@ -24,12 +24,13 @@ class DonorController extends Controller
 
         $user = User::find($id);
         $user->load(['subscriptions']);
+        $subscriptions = $user->subscriptions()->orderBy('created_at', 'desc')->get();
         $transactions = $transactions = Transaction::whereHas('invoice.subscription', function ($query) use ($user) {
             $query->where('user_id', $user->id);
-        })->latest()->get();
+        })->orderBy('paid_at','desc')->get();
         $invoices = Invoice::whereHas('subscription', function ($query) use ($user) {
             $query->where('user_id', $user->id);
-        })->with('subscription')->latest()->get();
-        return view('pages.admin.donors.show', compact('user', 'transactions', 'invoices'));
+        })->with('subscription')->orderBy('invoice_date','desc')->get();
+        return view('pages.admin.donors.show', compact('user', 'transactions', 'invoices', 'subscriptions'));
     }
 }

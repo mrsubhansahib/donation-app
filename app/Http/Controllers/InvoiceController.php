@@ -38,13 +38,13 @@ class InvoiceController extends Controller
 
         if ($user->role == 'admin') {
             // Admin sees all invoices
-            $invoices = Invoice::all();
+            $invoices = Invoice::with('subscription')->orderBy('invoice_date', 'desc')->get();
             return view('pages.admin.invoices.index', compact('invoices'));
         } else {
             // User sees only their invoices
             $invoices = Invoice::whereHas('subscription', function ($query) use ($user) {
                 $query->where('user_id', $user->id);
-            })->with('subscription')->latest()->get();
+            })->with('subscription')->orderBy('invoice_date', 'desc')->get();
             return view('pages.user.invoices.index', compact('invoices'));
         }
     }

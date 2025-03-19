@@ -19,11 +19,11 @@ class SubscriptionController extends Controller
 
         if ($user->role == 'admin') {
             // Admin sees all subscriptions
-            $subscriptions = Subscription::with('user')->latest()->get();
+            $subscriptions = Subscription::with('user')->orderBy('created_at', 'desc')->get();
             return view('pages.admin.subscriptions.index', compact('subscriptions'));
         } else {
             // User sees only their subscriptions
-            $subscriptions = Subscription::where('user_id', $user->id)->latest()->get();
+            $subscriptions = Subscription::where('user_id', $user->id)->orderBy('created_at', 'desc')->get();
             return view('pages.user.subscriptions.index', compact('subscriptions'));
         }
     }

@@ -4,7 +4,7 @@
     <div class="container mt-4">
         <h2 class="mb-4">All Donations</h2>
         <div class="card shadow">
-            <div class="card-body table-responsive">
+            <div class="card-body">
                 <table id="dataTableExample" class="table">
                     <thead class="thead-dark">
                         <tr>
@@ -16,7 +16,7 @@
                             <th>Start Date</th>
                             <th>End Date</th>
                             <th>Cancel Date</th>
-                            <th>Actions</th>
+                            {{-- <th>Actions</th> --}}
                         </tr>
                     </thead>
                     <tbody>
@@ -52,10 +52,10 @@
                                 <td>
                                     {{ $subscription->canceled_at ? \Carbon\Carbon::parse($subscription->canceled_at)->format('d-m-Y') : 'N/A' }}
                                 </td>
-                                <td>
-                                    {{-- <a href="{{ route('user.subscriptions.show', $subscription->id) }}" class="btn btn-info btn-sm">View</a> --}}
+                                {{-- <td>
+                                    <a href="{{ route('user.subscriptions.show', $subscription->id) }}" class="btn btn-info btn-sm">View</a>
                                     <a href="#" onclick="alert('Coming Soon!')" class="btn btn-info btn-sm">View</a>
-                                </td>
+                                </td> --}}
                             </tr>
                         @endforeach
                     </tbody>

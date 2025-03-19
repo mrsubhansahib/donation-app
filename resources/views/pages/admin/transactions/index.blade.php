@@ -43,7 +43,7 @@
                                 <td><span class="badge bg-{{ $transaction->status === 'succeeded' ? 'success' : 'danger' }}">
                                         {{ ucfirst($transaction->status) }}
                                     </span></td>
-                                <td>{{ \Carbon\Carbon::parse($transaction->paid_at)->format('d-m-Y') }}</td>
+                                <td>{{ \Carbon\Carbon::parse($transaction->paid_at)->format('d-m-Y H:i') }}</td>
                                 <td>
                                     {{-- 
                                         <a href="{{ route('user.transactions.show', $transaction->id) }}"
