@@ -73,11 +73,9 @@ class StripePaymentController extends Controller
 
         DB::beginTransaction();
         try {
-            // Check if user already exists
             $user = User::where('email', $data['email'])->first();
 
             if ($user) {
-                // Update existing user
                 $user->update([
                     'first_name' => $data['first_name'],
                     'last_name' => $data['last_name'],
@@ -89,7 +87,6 @@ class StripePaymentController extends Controller
                     'country' => $data['country'],
                 ]);
             } else {
-                // Create New User
                 $user = User::create([
                     'first_name' => $data['first_name'],
                     'last_name' => $data['last_name'],
@@ -106,7 +103,6 @@ class StripePaymentController extends Controller
 
             Stripe\Stripe::setApiKey(env('STRIPE_SECRET'));
 
-            // If user doesn't have Stripe ID, create a customer in Stripe
             if (!$user->stripe_id) {
                 $customer = Stripe\Customer::create([
                     'email' => $data['email'],
@@ -114,49 +110,34 @@ class StripePaymentController extends Controller
                 ]);
                 $user->update(['stripe_id' => $customer->id]);
             } else {
-                // Retrieve existing Stripe customer
                 $customer = Stripe\Customer::retrieve($user->stripe_id);
             }
 
-            // Create Stripe Product
             $product = Stripe\Product::create([
                 'name' => 'Custom Subscription',
             ]);
 
-            // Create Stripe Price (amount in cents)
             $price = Stripe\Price::create([
                 'unit_amount' => $data['amount'] * 100,
                 'currency' => $data['currency'],
-                'recurring' => ['interval' => $data['type']], // daily, weekly, monthly
+                'recurring' => ['interval' => $data['type']],
                 'product' => $product->id,
             ]);
 
-            // Convert start and cancel dates
             $startDate = Carbon::parse($data['start_date']);
-            $cancelAt = Carbon::parse($data['cancellation'])->timestamp;
-            $now = Carbon::now();
+            $endDate = Carbon::parse($data['cancellation'])->endOfDay(); // Ensure last day charge
 
-            // Ensure billing cycle anchor is always in the future
-            $billingAnchor = $startDate->isPast() || $startDate->isToday() || $now->diffInHours($startDate, false) <= 6
-                ? Carbon::now()->addMinute()->timestamp
-                : $startDate->timestamp;
+            $billingAnchor = $startDate->isPast() ? Carbon::now()->addMinute()->timestamp : $startDate->timestamp;
 
-            // Create Stripe Subscription with Instant Charge
-            $subscription = Stripe\Subscription::create(
-                [
-                    'customer' => $customer->id,
-                    'items' => [['price' => $price->id]],
-                    'billing_cycle_anchor' => $billingAnchor,
-                    // 'cancel_at_period_end' => true, // Cancels at the end of billing cycle
-                    'payment_behavior' => 'default_incomplete',
-                    'expand' => ['latest_invoice.payment_intent'],
-                    'cancel_at' => $cancelAt,
-                    'proration_behavior' => 'none' // Prevents Stripe from adjusting the amount
-                ]
-            );
-
-            // Store Subscription in Database
-            $dbSubscription = $user->subscriptions()->create([
+            $subscription = Stripe\Subscription::create([
+                'customer' => $customer->id,
+                'items' => [['price' => $price->id]],
+                'billing_cycle_anchor' => $billingAnchor,
+                'cancel_at' => $endDate->timestamp, // Ensures last invoice is charged
+                'proration_behavior' => 'none',
+                'expand' => ['latest_invoice.payment_intent'],
+            ]);
+            $user->subscriptions()->create([
                 'stripe_subscription_id' => $subscription->id,
                 'stripe_price_id' => $price->id,
                 'status' => $subscription->status,
@@ -164,37 +145,14 @@ class StripePaymentController extends Controller
                 'currency' => $data['currency'],
                 'type' => $data['type'],
                 'start_date' => Carbon::createFromTimestamp($subscription->current_period_start),
-                'end_date' => $subscription->cancel_at ? Carbon::createFromTimestamp($subscription->cancel_at) : null,
-                'canceled_at' => $subscription->cancel_at ? Carbon::createFromTimestamp($subscription->cancel_at) : null,
+                'end_date' => $endDate,
+                'canceled_at' => $endDate,
             ]);
-
-
             DB::commit();
-            // DB::rollBack();
-
             Auth::login($user);
-            return redirect()->route('dashboard')->with('success', 'Subscription successfully created!');
+            return redirect()->route('dashboard')->with('success', 'Subscription successfully created! Your invoices and transactions are generated in just 5 minutes due to high traffic.');
         } catch (\Exception $e) {
             DB::rollBack();
-
-            // Check if the error message contains the currency conflict
-            if (strpos($e->getMessage(), 'You cannot combine currencies on a single customer') !== false) {
-                // Fetch the existing currency from the Stripe customer subscriptions or transactions
-                $user = auth()->user(); // Assuming the user is authenticated
-                $existingCurrency = 'a different currency'; // Default message if currency isn't found
-
-                if ($user && $user->stripe_id) {
-                    $stripe = new \Stripe\StripeClient(env('STRIPE_SECRET'));
-                    $customer = $stripe->customers->retrieve($user->stripe_id, ['expand' => ['subscriptions']]);
-
-                    if (!empty($customer->subscriptions->data)) {
-                        $existingCurrency = strtoupper($customer->subscriptions->data[0]->currency);
-                    }
-                }
-
-                return redirect()->back()->withInput()->with('error', "You have already donated in {$existingCurrency}. Please continue donations in the same currency.");
-            }
-
             return redirect()->back()->withInput()->with('error', 'Error: ' . $e->getMessage());
         }
     }

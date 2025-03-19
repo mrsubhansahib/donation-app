@@ -71,7 +71,7 @@
                                     <td>{{ ucfirst($subscription->status) }}</td>
                                     <td>{{  \Carbon\Carbon::parse($subscription->start_date)->format('d-m-Y')  }}</td>
                                     <td>{{  \Carbon\Carbon::parse($subscription->end_date)->format('d-m-Y') ?? 'N/A'  }}</td>
-                                    <td>{{  \Carbon\Carbon::parse($subscription->cancel_at)->format('d-m-Y') ?? 'N/A'  }}</td>
+                                    <td>{{  \Carbon\Carbon::parse($subscription->canceled_at)->format('d-m-Y') ?? 'N/A'  }}</td>
                                     <td><a href="#" onclick="alert('Coming Soon!')"
                                             class="btn btn-info btn-sm">View</a></td>
                                 </tr>

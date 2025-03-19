@@ -7,7 +7,9 @@ use App\Http\Controllers\SubscriptionController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\StripePaymentController;
-
+use App\Http\Controllers\WebhookController;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
 
 
@@ -28,6 +30,11 @@ Route::get('/', function () {
     return view('pages.index');
 })->name('home');
 
+// Route::post('/webhook/stripe', function (Request $request) {
+//     Log::info('Stripe Webhook Received:', $request->all());
+//     return response()->json(['status' => 'success']);
+// });
+Route::post('/webhook/stripe', [WebhookController::class, 'handleWebhook']);
 Route::controller(StripePaymentController::class)->group(function () {
     Route::get('stripe', 'stripe');
     Route::post('stripe', 'stripePost')->name('stripe.post');

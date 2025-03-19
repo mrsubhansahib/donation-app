@@ -120,7 +120,7 @@
                 <div class="col-md-12 mt-3">
 
                     <label for="tax_payer" class="d-flex"><input type="checkbox" name="tax_payer" id="tax_payer"
-                            required> &nbsp;&nbsp;&nbsp;Yes, I am a UK tax payer and would like Gift Aid claimed on my
+                            > &nbsp;&nbsp;&nbsp;Yes, I am a UK tax payer and would like Gift Aid claimed on my
                         donations
                     </label>
                 </div>
@@ -222,29 +222,33 @@
     <script>
         // Function to set the minimum date for both inputs
         function setMinDate() {
-            const today = new Date();
-            const tomorrow = new Date();
-            tomorrow.setDate(today.getDate() + 2); // Set to one day after today
+            const now = new Date();
 
-            const oneMonthLater = new Date();
-            oneMonthLater.setMonth(today.getMonth() + 1); // Set to one month from today
+            // Adjust for timezone offset to get correct local date
+            const localDate = new Date(now.getTime() - now.getTimezoneOffset() * 60000);
 
-            const formattedToday = today.toISOString().split('T')[0]; // Format YYYY-MM-DD
-            const formattedTomorrow = tomorrow.toISOString().split('T')[0]; // Format YYYY-MM-DD
-            const formattedOneMonthLater = oneMonthLater.toISOString().split('T')[0]; // Format YYYY-MM-DD
+            // Ensure we always pick the next valid day
+            const today = localDate.toISOString().split('T')[0];
+            const tomorrow = new Date(localDate);
+            tomorrow.setDate(localDate.getDate() + 1); // Next day
+
+            const oneMonthLater = new Date(localDate);
+            oneMonthLater.setMonth(localDate.getMonth() + 1); // One month from today
+
+            const formattedTomorrow = tomorrow.toISOString().split('T')[0];
+            const formattedOneMonthLater = oneMonthLater.toISOString().split('T')[0];
 
             const startDateInput = document.getElementById('start_date');
             const endDateInput = document.getElementById('cancellation');
 
             // Set min values
-            startDateInput.min = formattedToday;
-            endDateInput.min = formattedTomorrow;
+            startDateInput.min = today; // Set minimum date to today
+            endDateInput.min = formattedTomorrow; // Ensure end date is at least tomorrow
 
             // Set default values
-            startDateInput.value = formattedToday; // Default start date is today
-            endDateInput.value = formattedOneMonthLater; // Default end date is one month later
+            startDateInput.value = today;
+            endDateInput.value = formattedOneMonthLater;
         }
-
 
         // Call the function when the page loads
         window.onload = setMinDate;

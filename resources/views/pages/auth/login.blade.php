@@ -45,8 +45,12 @@
                     Remember me
                   </label>
                 </div> --}}
-                                    <div>
+                                    <div class="d-flex justify-content-between align-items-center">
                                         <button type="submit" class="btn btn-primary me-2 mb-2 mb-md-0">Login</button>
+                                        <a href="{{ route('home') }}" class="btn btn-dark me-2 mb-2 mb-md-0">
+                                            <i class="me-2 icon-md" data-feather="home"></i>
+                                            Back to Home
+                                        </a>
                                         {{-- <button type="button" class="btn btn-outline-primary btn-icon-text mb-2 mb-md-0">
                     <i class="btn-icon-prepend" data-feather="twitter"></i>
                     Login with twitter

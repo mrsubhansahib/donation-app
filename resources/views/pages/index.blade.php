@@ -97,7 +97,11 @@
     <div class="d-flex justify-content-around">
       <div class=""></div>
       <h1 style="font-weight: 800;    margin-bottom: 0;">DONATION FORM</h1>
-      <button class="btn px-4  btn-secondary" onclick="window.location.href='{{route('login')}}'">Login</button>
+      @if (auth()->check())
+      <button class="btn px-4  btn-secondary" onclick="window.location.href='{{route('dashboard')}}'">Dashboard</button>
+        @else
+        <button class="btn px-4  btn-secondary" onclick="window.location.href='{{route('login')}}'">Login</button>
+      @endif
     </div>
     <div class="m-auto" style="width: 5% !important;">
       <hr style="height: 4px;">

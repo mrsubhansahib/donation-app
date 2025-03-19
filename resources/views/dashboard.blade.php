@@ -34,7 +34,8 @@
                             <div class="card-body">
                                 <div class="d-flex justify-content-between align-items-baseline">
                                     <h6 class="card-title mb-0">Total Donations</h6>
-                                    <a href="{{ route('admin.subscriptions.index') }}" class="btn btn-sm btn-primary">View</a>
+                                    <a href="{{ route('admin.subscriptions.index') }}"
+                                        class="btn btn-sm btn-primary">View</a>
                                 </div>
                                 <h3 class="mb-2 ms-4">{{ $total_donations }}</h3>
                             </div>
@@ -59,24 +60,14 @@
                             <div class="card-body">
                                 <div class="d-flex justify-content-between align-items-baseline">
                                     <h6 class="card-title mb-0">My Donations</h6>
-                                    <a href="{{ route('user.subscriptions.index') }}" class="btn btn-sm btn-primary">View</a>
+                                    <a href="{{ route('user.subscriptions.index') }}"
+                                        class="btn btn-sm btn-primary">View</a>
                                 </div>
                                 <h3 class="mb-2 ms-4">{{ auth()->user()->subscriptions()->count() }}</h3>
                             </div>
                         </div>
                     </div>
 
-                    <div class="col-md-4 grid-margin stretch-card">
-                        <div class="card">
-                            <div class="card-body">
-                                <div class="d-flex justify-content-between align-items-baseline">
-                                    <h6 class="card-title mb-0">My Transactions</h6>
-                                    <a href="{{ route('user.transactions.index') }}" class="btn btn-sm btn-primary">View</a>
-                                </div>
-                                <h3 class="mb-2 ms-4">{{ count($my_transactions )}}</h3>
-                            </div>
-                        </div>
-                    </div>
 
                     <div class="col-md-4 grid-margin stretch-card">
                         <div class="card">
@@ -86,6 +77,18 @@
                                     <a href="{{ route('user.invoices.index') }}" class="btn btn-sm btn-primary">View</a>
                                 </div>
                                 <h3 class="mb-2 ms-4">{{ auth()->user()->invoices()->count() }}</h3>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 grid-margin stretch-card">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-baseline">
+                                    <h6 class="card-title mb-0">My Transactions</h6>
+                                    <a href="{{ route('user.transactions.index') }}"
+                                        class="btn btn-sm btn-primary">View</a>
+                                </div>
+                                <h3 class="mb-2 ms-4">{{ count($my_transactions) }}</h3>
                             </div>
                         </div>
                     </div>
