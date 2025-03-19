@@ -45,7 +45,7 @@ class SubscriptionController extends Controller
     {
         Stripe::setApiKey(env('STRIPE_SECRET'));
         $subscription=StripeSubscription::retrieve($id);
-        $subscription->cancel(['cancel_at_period_end' => true]);
+        $subscription->cancel();
         $subscription = Subscription::where('stripe_subscription_id', $id)->first();
         $subscription->update([
             'status' => 'canceled',

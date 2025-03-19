@@ -10,10 +10,10 @@
 
 
 
-                <table class="table table-bordered table-striped">
+                <table id="dataTableExample" class="table">
                     <thead class="thead-dark">
                         <tr>
-                            <th>ID</th>
+                            <th>No#</th>
                             <th>User Email</th>
                             <th>Donation Type</th>
                             <th>Amount</th>
@@ -23,52 +23,43 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @if ($invoices->count() > 0)
-                            @foreach ($invoices as $invoice)
-                                <tr>
-                                    <td>{{ $invoice->id }}</td>
-                                    <td>{{ $invoice->subscription->user->email }}</td>
-                                    <td>
-                                        @if ($invoice->subscription->type == 'day')
-                                            Daily
-                                        @elseif($invoice->subscription->type == 'week')
-                                            Weekly
-                                        @elseif($invoice->subscription->type == 'month')
-                                            Monthly
-                                        @endif
-                                    </td>
-                                    <td>
-                                        @if ($invoice->subscription->currency == 'usd')
-                                            {{ $invoice->amount / 100 }} $
-                                        @elseif($invoice->subscription->currency == 'gbp')
-                                            {{ $invoice->amount / 100 }} £
-                                        @elseif($invoice->subscription->currency == 'eur')
-                                            {{ $invoice->amount / 100 }} €
-                                        @endif
-                                    </td>
-                                    <td>
-                                        {{ ucfirst($invoice->status) }}
-                                    </td>
-                                    <td>{{ \Carbon\Carbon::parse($invoice->invoice_date)->format('d-m-Y H:i') }}</td>
-                                    
-                                    <td>
-                                        {{-- <a href="{{ route('user.invoices.show', $invoice->id) }}" class="btn btn-info btn-sm">View</a> --}}
-                                        <a href="#" onclick="alert('Coming Soon!')" class="btn btn-info btn-sm">View</a>
-                                        {{-- @if ($invoice->status == 'paid' && $invoice->invoice_pdf)
+                        @foreach ($invoices as $invoice)
+                            <tr>
+                                <td>{{ $loop->iteration }}</td>
+                                <td>{{ $invoice->subscription->user->email }}</td>
+                                <td>
+                                    @if ($invoice->subscription->type == 'day')
+                                        Daily
+                                    @elseif($invoice->subscription->type == 'week')
+                                        Weekly
+                                    @elseif($invoice->subscription->type == 'month')
+                                        Monthly
+                                    @endif
+                                </td>
+                                <td>
+                                    @if ($invoice->subscription->currency == 'usd')
+                                        {{ $invoice->amount / 100 }} $
+                                    @elseif($invoice->subscription->currency == 'gbp')
+                                        {{ $invoice->amount / 100 }} £
+                                    @elseif($invoice->subscription->currency == 'eur')
+                                        {{ $invoice->amount / 100 }} €
+                                    @endif
+                                </td>
+                                <td>
+                                    {{ ucfirst($invoice->status) }}
+                                </td>
+                                <td>{{ \Carbon\Carbon::parse($invoice->invoice_date)->format('d-m-Y H:i') }}</td>
+
+                                <td>
+                                    {{-- <a href="{{ route('user.invoices.show', $invoice->id) }}" class="btn btn-info btn-sm">View</a> --}}
+                                    <a href="#" onclick="alert('Coming Soon!')" class="btn btn-info btn-sm">View</a>
+                                    {{-- @if ($invoice->status == 'paid' && $invoice->invoice_pdf)
                                     <a href="{{ $invoice->invoice_pdf }}" target="_blank" class="btn btn-primary btn-sm">Download</a>
                                 @endif --}}
-                                    </td>
-                                </tr>
-                            @endforeach
-                        @else
-                            <tr>
-                                <td colspan="8">
-
-                                    <p class="text-center">No invoices found.</p>
                                 </td>
-
                             </tr>
-                        @endif
+                        @endforeach
+
                     </tbody>
                 </table>
             </div>

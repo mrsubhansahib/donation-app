@@ -32,10 +32,10 @@
         <div class="card shadow mb-4">
             <div class="card-body">
                 <h4 class="mb-3">Donations</h4>
-                <table class="table table-bordered table-striped">
+                <table id="" class="table dataTableExample">
                     <thead class="thead-dark">
                         <tr>
-                            <th>ID</th>
+                            <th>No#</th>
                             <th>Donation Type</th>
                             <th>Amount</th>
                             <th>Status</th>
@@ -46,45 +46,35 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @if ($user->subscriptions->count() > 0)
-                            @foreach ($user->subscriptions as $subscription)
-                                <tr>
-                                    <td>{{ $subscription->id }}</td>
-                                    <td>
-                                        @if ($subscription->type == 'day')
-                                            Daily
-                                        @elseif($subscription->type == 'week')
-                                            Weekly
-                                        @elseif($subscription->type == 'month')
-                                            Monthly
-                                        @endif
-                                    </td>
-                                    <td>
-                                        @if ($subscription->currency == 'usd')
-                                            {{ $subscription->price ? number_format($subscription->price, 2) : '0' }} $
-                                        @elseif($subscription->currency == 'gbp')
-                                            {{ $subscription->price ? number_format($subscription->price, 2) : '0' }} £
-                                        @elseif($subscription->currency == 'eur')
-                                            {{ $subscription->price ? number_format($subscription->price, 2) : '0' }} €
-                                        @endif
-                                    </td>
-                                    <td>{{ ucfirst($subscription->status) }}</td>
-                                    <td>{{  \Carbon\Carbon::parse($subscription->start_date)->format('d-m-Y')  }}</td>
-                                    <td>{{  \Carbon\Carbon::parse($subscription->end_date)->format('d-m-Y') ?? 'N/A'  }}</td>
-                                    <td>{{  \Carbon\Carbon::parse($subscription->canceled_at)->format('d-m-Y') ?? 'N/A'  }}</td>
-                                    <td><a href="#" onclick="alert('Coming Soon!')"
-                                            class="btn btn-info btn-sm">View</a></td>
-                                </tr>
-                            @endforeach
-                        @else
+                        @foreach ($user->subscriptions as $subscription)
                             <tr>
-                                <td colspan="7">
-
-                                    <p class="text-center">No donations found.</p>
+                                <td>{{ $loop->iteration }}</td>
+                                <td>
+                                    @if ($subscription->type == 'day')
+                                        Daily
+                                    @elseif($subscription->type == 'week')
+                                        Weekly
+                                    @elseif($subscription->type == 'month')
+                                        Monthly
+                                    @endif
                                 </td>
-
+                                <td>
+                                    @if ($subscription->currency == 'usd')
+                                        {{ $subscription->price ? number_format($subscription->price, 2) : '0' }} $
+                                    @elseif($subscription->currency == 'gbp')
+                                        {{ $subscription->price ? number_format($subscription->price, 2) : '0' }} £
+                                    @elseif($subscription->currency == 'eur')
+                                        {{ $subscription->price ? number_format($subscription->price, 2) : '0' }} €
+                                    @endif
+                                </td>
+                                <td>{{ ucfirst($subscription->status) }}</td>
+                                <td>{{ \Carbon\Carbon::parse($subscription->start_date)->format('d-m-Y') }}</td>
+                                <td>{{ \Carbon\Carbon::parse($subscription->end_date)->format('d-m-Y') ?? 'N/A' }}</td>
+                                <td>{{ \Carbon\Carbon::parse($subscription->canceled_at)->format('d-m-Y') ?? 'N/A' }}</td>
+                                <td><a href="#" onclick="alert('Coming Soon!')" class="btn btn-info btn-sm">View</a>
+                                </td>
                             </tr>
-                        @endif
+                        @endforeach
                     </tbody>
                 </table>
             </div>
@@ -94,10 +84,10 @@
         <div class="card shadow mb-4">
             <div class="card-body">
                 <h4 class="mb-3">Invoices</h4>
-                <table class="table table-bordered table-striped">
+                <table id="" class="table dataTableExample">
                     <thead class="thead-dark">
                         <tr>
-                            <th>ID</th>
+                            <th>No#</th>
                             <th>Donation Type</th>
                             <th>Amount</th>
                             <th>Status</th>
@@ -106,43 +96,34 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @if ($invoices->count() > 0)
-                            @foreach ($invoices as $invoice)
-                                <tr>
-                                    <td>{{ $invoice->id }}</td>
-                                    <td>
-                                        @if ($invoice->subscription->type == 'day')
-                                            Daily
-                                        @elseif($invoice->subscription->type == 'week')
-                                            Weekly
-                                        @elseif($invoice->subscription->type == 'month')
-                                            Monthly
-                                        @endif
-                                    </td>
-                                    <td>
-                                        @if ($invoice->subscription->currency == 'usd')
-                                            {{ $invoice->amount / 100 }} $
-                                        @elseif($invoice->subscription->currency == 'gbp')
-                                            {{ $invoice->amount / 100 }} £
-                                        @elseif($invoice->subscription->currency == 'eur')
-                                            {{ $invoice->amount / 100 }} €
-                                        @endif
-                                    </td>
-                                    <td>{{ ucfirst($invoice->status) }}</td>
-                                    <td>{{  \Carbon\Carbon::parse($invoice->invoice_date)->format('d-m-Y H:i')  }}</td>
-                                    <td><a href="#" onclick="alert('Coming Soon!')"
-                                            class="btn btn-info btn-sm">View</a></td>
-                                </tr>
-                            @endforeach
-                        @else
+                        @foreach ($invoices as $invoice)
                             <tr>
-                                <td colspan="7">
-
-                                    <p class="text-center">No invoices found.</p>
+                                <td>{{ $loop->iteration }}</td>
+                                <td>
+                                    @if ($invoice->subscription->type == 'day')
+                                        Daily
+                                    @elseif($invoice->subscription->type == 'week')
+                                        Weekly
+                                    @elseif($invoice->subscription->type == 'month')
+                                        Monthly
+                                    @endif
                                 </td>
-
+                                <td>
+                                    @if ($invoice->subscription->currency == 'usd')
+                                        {{ $invoice->amount / 100 }} $
+                                    @elseif($invoice->subscription->currency == 'gbp')
+                                        {{ $invoice->amount / 100 }} £
+                                    @elseif($invoice->subscription->currency == 'eur')
+                                        {{ $invoice->amount / 100 }} €
+                                    @endif
+                                </td>
+                                <td>{{ ucfirst($invoice->status) }}</td>
+                                <td>{{ \Carbon\Carbon::parse($invoice->invoice_date)->format('d-m-Y H:i') }}</td>
+                                <td><a href="#" onclick="alert('Coming Soon!')" class="btn btn-info btn-sm">View</a>
+                                </td>
                             </tr>
-                        @endif
+                        @endforeach
+
                     </tbody>
                 </table>
             </div>
@@ -152,10 +133,10 @@
         <div class="card shadow">
             <div class="card-body">
                 <h4 class="mb-3">Transactions</h4>
-                <table class="table table-bordered table-striped">
+                <table id="" class="table dataTableExample">
                     <thead class="thead-dark">
                         <tr>
-                            <th>ID</th>
+                            <th>No#</th>
                             <th>Donation Type</th>
                             <th>Amount</th>
                             <th>Status</th>
@@ -164,43 +145,33 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @if ($transactions->count() > 0)
-                            @foreach ($transactions as $transaction)
-                                <tr>
-                                    <td>{{ $transaction->id }}</td>
-                                    <td>
-                                        @if ($transaction->invoice->subscription->type == 'day')
-                                            Daily
-                                        @elseif($transaction->invoice->subscription->type == 'week')
-                                            Weekly
-                                        @elseif($transaction->invoice->subscription->type == 'month')
-                                            Monthly
-                                        @endif
-                                    </td>
-                                    <td>
-                                        @if ($transaction->invoice->subscription->currency == 'usd')
-                                            {{ $transaction->invoice->amount / 100}} $
-                                        @elseif($transaction->invoice->subscription->currency == 'gbp')
-                                            {{ $transaction->invoice->amount / 100}} £
-                                        @elseif($transaction->invoice->subscription->currency == 'eur')
-                                            {{ $transaction->invoice->amount / 100}} €
-                                        @endif
-                                    </td>
-                                    <td>{{ ucfirst($transaction->status) }}</td>
-                                    <td>{{  \Carbon\Carbon::parse($transaction->paid_at)->format('d-m-Y H:i')  }}</td>
-                                    <td><a href="#" onclick="alert('Coming Soon!')"
-                                            class="btn btn-info btn-sm">View</a></td>
-                                </tr>
-                            @endforeach
-                        @else
+                        @foreach ($transactions as $transaction)
                             <tr>
-                                <td colspan="7">
-
-                                    <p class="text-center">No transactions found.</p>
+                                <td>{{ $loop->iteration }}</td>
+                                <td>
+                                    @if ($transaction->invoice->subscription->type == 'day')
+                                        Daily
+                                    @elseif($transaction->invoice->subscription->type == 'week')
+                                        Weekly
+                                    @elseif($transaction->invoice->subscription->type == 'month')
+                                        Monthly
+                                    @endif
                                 </td>
-
+                                <td>
+                                    @if ($transaction->invoice->subscription->currency == 'usd')
+                                        {{ $transaction->invoice->amount / 100 }} $
+                                    @elseif($transaction->invoice->subscription->currency == 'gbp')
+                                        {{ $transaction->invoice->amount / 100 }} £
+                                    @elseif($transaction->invoice->subscription->currency == 'eur')
+                                        {{ $transaction->invoice->amount / 100 }} €
+                                    @endif
+                                </td>
+                                <td>{{ ucfirst($transaction->status) }}</td>
+                                <td>{{ \Carbon\Carbon::parse($transaction->paid_at)->format('d-m-Y H:i') }}</td>
+                                <td><a href="#" onclick="alert('Coming Soon!')" class="btn btn-info btn-sm">View</a>
+                                </td>
                             </tr>
-                        @endif
+                        @endforeach
                     </tbody>
                 </table>
             </div>
@@ -212,3 +183,34 @@
         </a>
     </div>
 @endsection
+
+@push('custom-scripts')
+    <script>
+        $(function() {
+            'use strict';
+
+            $('.dataTableExample').each(function() { // Target all tables with the class 'dataTableExample'
+                var datatable = $(this).DataTable({
+                    "aLengthMenu": [
+                        [10, 30, 50, -1],
+                        [10, 30, 50, "All"]
+                    ],
+                    "iDisplayLength": 10,
+                    "language": {
+                        search: ""
+                    }
+                });
+
+                // SEARCH - Add placeholder for Search and turn it into in-line form control
+                var search_input = $(this).closest('.dataTables_wrapper').find('div[id$=_filter] input');
+                search_input.attr('placeholder', 'Search');
+                search_input.removeClass('form-control-sm');
+
+                // LENGTH - Inline-Form control
+                var length_sel = $(this).closest('.dataTables_wrapper').find('div[id$=_length] select');
+                length_sel.removeClass('form-control-sm');
+            });
+
+        });
+    </script>
+@endpush
