@@ -150,7 +150,7 @@ class StripePaymentController extends Controller
             ]);
             DB::commit();
             Auth::login($user);
-            return redirect()->route('dashboard')->with('success', 'Subscription successfully created! Your invoices and transactions are generated in just 5 minutes due to high traffic.');
+            return redirect()->route('dashboard')->with('success', 'Donation successful! Your invoice and transaction are generated within just 5 minutes due to high traffic.');
         } catch (\Exception $e) {
             DB::rollBack();
             return redirect()->back()->withInput()->with('error', 'Error: ' . $e->getMessage());
