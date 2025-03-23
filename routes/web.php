@@ -35,6 +35,14 @@ Route::get('/run-schedule', function () {
     Artisan::call('schedule:run');
     return 'Scheduler executed successfully!';
 });
+Route::get('/db-fresh',function(){
+    Artisan::call('migrate:fresh');
+    return 'Migration completed!';
+});
+Route::get('/db-seed',function(){
+    Artisan::call('db:seed');
+    return 'Data seeded successfully!'
+});
 
 // Crone job command for scheduler
 // /usr/local/bin/php /home/softjsbg/dailydonate.softicerastudent.com/artisan schedule:run >> /dev/null 2>&1
