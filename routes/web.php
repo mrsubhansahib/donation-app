@@ -41,7 +41,7 @@ Route::get('/db-fresh',function(){
 });
 Route::get('/db-seed',function(){
     Artisan::call('db:seed');
-    return 'Data seeded successfully!'
+    return 'Data seeded successfully!';
 });
 
 // Crone job command for scheduler
