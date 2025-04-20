@@ -13,7 +13,7 @@ class SubscriptionController extends Controller
 {
     public function index()
     {
-        
+
 
         $user = auth()->user();
 
@@ -43,14 +43,17 @@ class SubscriptionController extends Controller
     }
     public function cancel_subscription($id)
     {
-        Stripe::setApiKey(env('STRIPE_SECRET'));
-        $subscription=StripeSubscription::retrieve($id);
-        $subscription->cancel();
+
         $subscription = Subscription::where('stripe_subscription_id', $id)->first();
-        $subscription->update([
-            'status' => 'canceled',
-            'canceled_at' => now()
-        ]);
+        if ($subscription) {
+            $subscription->update([
+                'status' => 'canceled',
+                'canceled_at' => now()
+            ]);
+            Stripe::setApiKey(env('STRIPE_SECRET'));
+            $subscription = StripeSubscription::retrieve($id);
+            $subscription->cancel();
+        }
         return redirect()->back()->with('success', 'Subscription canceled successfully');
     }
 }
