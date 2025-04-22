@@ -14,6 +14,7 @@ use App\Mail\SubscriptionCanceledMail;
 use App\Mail\InvoicePaidMail;
 use App\Mail\InvoiceFailedMail;
 use App\Mail\TransactionFailedMail;
+use App\Mail\TransactionPaidMail;
 
 class WebhookController extends Controller
 {
@@ -60,9 +61,9 @@ class WebhookController extends Controller
                 $this->createFailedTransaction($object);
                 break;
 
-            // case 'customer.subscription.updated':
-            //     $this->updateSubscription($object);
-            //     break;
+                // case 'customer.subscription.updated':
+                //     $this->updateSubscription($object);
+                //     break;
         }
 
         return response()->json(['status' => 'success'], 200);
@@ -81,10 +82,10 @@ class WebhookController extends Controller
     {
         $subscription = Subscription::where('stripe_subscription_id', $stripeSubscription['id'])->first();
         if ($subscription) {
-            $subscription->update([
-                'status' => 'canceled',
-                'canceled_at' => now(),
-            ]);
+            // $subscription->update([
+            //     'status' => 'canceled',
+            //     'canceled_at' => now(),
+            // ]);
 
             if ($subscription->user) {
                 Mail::to($subscription->user->email)->send(new SubscriptionCanceledMail($subscription->user, $subscription));
@@ -134,6 +135,11 @@ class WebhookController extends Controller
                 'status' => 'succeeded',
                 'paid_at' => now(),
             ]);
+            $user = $invoice->subscription->user ?? null;
+            if ($user) {
+                Mail::to($user->email)->send(new TransactionPaidMail($user, $invoice));
+                Log::info("✅ Transaction succeeded email sent to: " . $user->email);
+            }
         }
     }
 
@@ -166,6 +172,7 @@ class WebhookController extends Controller
             Log::info("✅ Invoice paid email sent to: " . $subscription->user->email);
         }
     }
+
 
     private function sendInvoiceFailedMail($stripeInvoice)
     {
