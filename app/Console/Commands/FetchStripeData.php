@@ -38,20 +38,6 @@ class FetchStripeData extends Command
     public function handle()
     {
         Stripe::setApiKey(env('STRIPE_SECRET'));
-
-        // $stripeSubscriptions = \Stripe\Subscription::all(['limit' => 200, 'status' => 'canceled']);
-        // foreach ($stripeSubscriptions->autoPagingIterator() as $stripeSubscription) {
-        //     // Find local subscription
-        //     $localSubscription = Subscription::where('stripe_subscription_id', $stripeSubscription->id)->first();
-
-        //     if ($localSubscription && $localSubscription->status !== 'canceled'  &&  $stripeSubscription->status == 'canceled' ) {
-        //         // Update status only if it's different
-        //         $localSubscription->update([
-        //             'status' => $stripeSubscription->status,
-        //             'canceled_at' => ($stripeSubscription->status === 'canceled') ? now() : null
-        //         ]);
-        //     }
-        // }
         $stripeInvoices = \Stripe\Invoice::all(['limit' => 200]);
 
         foreach ($stripeInvoices->autoPagingIterator() as $stripeInvoice) {

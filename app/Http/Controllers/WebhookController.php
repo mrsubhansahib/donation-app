@@ -3,19 +3,17 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\User;
 use App\Invoice;
 use App\Transaction;
 use App\Subscription;
-use App\Models\User; // 👈 Make sure to use User model
-use App\Mail\SubscriptionCreatedMail; // 👈 Add Mailable class
-use Stripe\Stripe;
-use Stripe\Event;
-use Stripe\PaymentIntent;
-use Stripe\Charge;
-use Carbon\Carbon;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Mail; // 👈 Mail facade
-use Stripe\Webhook;
+use App\Mail\SubscriptionCreatedMail;
+use App\Mail\SubscriptionCanceledMail;
+use App\Mail\InvoicePaidMail;
+use App\Mail\InvoiceFailedMail;
+use App\Mail\TransactionFailedMail;
 
 class WebhookController extends Controller
 {
@@ -25,40 +23,75 @@ class WebhookController extends Controller
         $payload = $request->getContent();
         $sigHeader = $request->header('Stripe-Signature');
 
-        // Logging for debugging
-        Log::info('📩 Stripe Webhook Headers:', ['headers' => $request->headers->all()]);
-        Log::info('📩 Stripe Webhook Payload:', ['payload' => json_decode($payload, true)]);
-
-        // For testing purpose only — add your event logic here
-        $event = json_decode($payload, true);
-
-        if ($event['type'] === 'customer.subscription.created') {
-            $this->sendSubscriptionCreatedMail($event['data']['object']); // 👈 Mail function call
+        try {
+            $event = \Stripe\Webhook::constructEvent($payload, $sigHeader, $endpointSecret);
+        } catch (\UnexpectedValueException $e) {
+            return response()->json(['error' => 'Invalid payload'], 400);
+        } catch (\Stripe\Exception\SignatureVerificationException $e) {
+            return response()->json(['error' => 'Invalid signature'], 400);
         }
 
-        return response()->json(['status' => 'received']);
+        $object = $event->data->object;
+
+        switch ($event->type) {
+            case 'customer.subscription.created':
+                $this->sendSubscriptionCreatedMail($object);
+                break;
+
+            case 'customer.subscription.deleted':
+                $this->cancelSubscription($object);
+                break;
+
+            case 'invoice.paid':
+                $this->createInvoice($object);
+                $this->sendInvoicePaidMail($object);
+                break;
+
+            case 'invoice.payment_failed':
+                $this->createFailedInvoice($object);
+                $this->sendInvoiceFailedMail($object);
+                break;
+
+            case 'charge.succeeded':
+                $this->createTransaction($object);
+                break;
+
+            case 'payment_intent.payment_failed':
+                $this->createFailedTransaction($object);
+                break;
+
+            // case 'customer.subscription.updated':
+            //     $this->updateSubscription($object);
+            //     break;
+        }
+
+        return response()->json(['status' => 'success'], 200);
     }
 
-    // 📬 Function to send subscription created email
     private function sendSubscriptionCreatedMail($stripeSubscription)
     {
         $subscription = Subscription::where('stripe_subscription_id', $stripeSubscription['id'])->first();
-
-        if ($subscription) {
-            $user = $subscription->user; // assuming `user()` relationship exists in Subscription model
-
-            if ($user) {
-                Mail::to($user->email)->send(new SubscriptionCreatedMail($user, $subscription));
-                Log::info("✅ Subscription created email sent to: " . $user->email);
-            } else {
-                Log::warning("⚠️ User not found for subscription ID: " . $subscription->id);
-            }
-        } else {
-            Log::warning("⚠️ Subscription not found for Stripe ID: " . $stripeSubscription['id']);
+        if ($subscription && $subscription->user) {
+            Mail::to($subscription->user->email)->send(new SubscriptionCreatedMail($subscription->user, $subscription));
+            Log::info("✅ Subscription created email sent to: " . $subscription->user->email);
         }
     }
 
-    // Existing functions...
+    private function cancelSubscription($stripeSubscription)
+    {
+        $subscription = Subscription::where('stripe_subscription_id', $stripeSubscription['id'])->first();
+        if ($subscription) {
+            $subscription->update([
+                'status' => 'canceled',
+                'canceled_at' => now(),
+            ]);
+
+            if ($subscription->user) {
+                Mail::to($subscription->user->email)->send(new SubscriptionCanceledMail($subscription->user, $subscription));
+                Log::info("✅ Subscription canceled email sent to: " . $subscription->user->email);
+            }
+        }
+    }
 
     private function createInvoice($stripeInvoice)
     {
@@ -68,18 +101,26 @@ class WebhookController extends Controller
             Invoice::create([
                 'subscription_id' => $subscription->id,
                 'stripe_invoice_id' => $stripeInvoice['id'],
-                'amount' => $stripeInvoice['amount_due'] / 100,
+                'amount' => $stripeInvoice['amount_due'],
                 'invoice_date' => now(),
                 'status' => $stripeInvoice['status'],
             ]);
         }
     }
 
-    private function updateInvoiceStatus($stripeInvoice)
+    private function createFailedInvoice($stripeInvoice)
     {
-        Invoice::where('stripe_invoice_id', $stripeInvoice['id'])->update([
-            'status' => 'paid',
-        ]);
+        $subscription = Subscription::where('stripe_subscription_id', $stripeInvoice['subscription'])->first();
+
+        if ($subscription && !Invoice::where('stripe_invoice_id', $stripeInvoice['id'])->exists()) {
+            Invoice::create([
+                'subscription_id' => $subscription->id,
+                'stripe_invoice_id' => $stripeInvoice['id'],
+                'amount' => $stripeInvoice['amount_due'],
+                'invoice_date' => now(),
+                'status' => 'failed',
+            ]);
+        }
     }
 
     private function createTransaction($stripeCharge)
@@ -96,26 +137,52 @@ class WebhookController extends Controller
         }
     }
 
-    private function updateSubscription($stripeSubscription)
+    private function createFailedTransaction($paymentIntent)
     {
-        $subscription = Subscription::where('stripe_subscription_id', $stripeSubscription['id'])->first();
+        $invoiceId = $paymentIntent['invoice'] ?? null;
+        $invoice = Invoice::where('stripe_invoice_id', $invoiceId)->first();
 
-        if ($subscription) {
-            $subscription->update([
-                'status' => $stripeSubscription['status'],
+        if ($invoice && !Transaction::where('stripe_payment_id', $paymentIntent['id'])->exists()) {
+            Transaction::create([
+                'invoice_id' => $invoice->id,
+                'stripe_payment_id' => $paymentIntent['id'],
+                'status' => 'failed',
+                'paid_at' => null,
             ]);
+
+            $user = $invoice->subscription->user ?? null;
+            if ($user) {
+                Mail::to($user->email)->send(new TransactionFailedMail($user, $invoice));
+                Log::info("⚠️ Transaction failed email sent to: " . $user->email);
+            }
         }
     }
 
-    private function cancelSubscription($stripeSubscription)
+    private function sendInvoicePaidMail($stripeInvoice)
     {
-        $subscription = Subscription::where('stripe_subscription_id', $stripeSubscription['id'])->first();
-
-        if ($subscription) {
-            $subscription->update([
-                'status' => 'canceled',
-                'canceled_at' => now(),
-            ]);
+        $subscription = Subscription::where('stripe_subscription_id', $stripeInvoice['subscription'])->first();
+        if ($subscription && $subscription->user) {
+            Mail::to($subscription->user->email)->send(new InvoicePaidMail($subscription->user, $stripeInvoice));
+            Log::info("✅ Invoice paid email sent to: " . $subscription->user->email);
         }
     }
+
+    private function sendInvoiceFailedMail($stripeInvoice)
+    {
+        $subscription = Subscription::where('stripe_subscription_id', $stripeInvoice['subscription'])->first();
+        if ($subscription && $subscription->user) {
+            Mail::to($subscription->user->email)->send(new InvoiceFailedMail($subscription->user, $stripeInvoice));
+            Log::info("⚠️ Invoice failed email sent to: " . $subscription->user->email);
+        }
+    }
+
+    // private function updateSubscription($stripeSubscription)
+    // {
+    //     $subscription = Subscription::where('stripe_subscription_id', $stripeSubscription['id'])->first();
+    //     if ($subscription) {
+    //         $subscription->update([
+    //             'status' => $stripeSubscription['status'],
+    //         ]);
+    //     }
+    // }
 }

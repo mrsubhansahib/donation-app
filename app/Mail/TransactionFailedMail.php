@@ -9,7 +9,7 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class SubscriptionCreatedMail extends Mailable
+class TransactionFailedMail extends Mailable
 {
     use Queueable, SerializesModels;
 
@@ -31,7 +31,7 @@ class SubscriptionCreatedMail extends Mailable
     public function envelope()
     {
         return new Envelope(
-            subject: 'Subscription Created Mail',
+            subject: 'Transaction Failed Mail',
         );
     }
 
@@ -43,7 +43,7 @@ class SubscriptionCreatedMail extends Mailable
     public function content()
     {
         return new Content(
-            markdown: 'emails.subscription.created',
+            markdown: 'emails.transaction.failed',
         );
     }
 

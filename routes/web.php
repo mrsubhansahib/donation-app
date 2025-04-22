@@ -8,9 +8,12 @@ use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\StripePaymentController;
 use App\Http\Controllers\WebhookController;
+use App\Subscription;
+use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
 
 
@@ -24,6 +27,16 @@ use Illuminate\Support\Facades\Route;
 | contains the "web" middleware group. Now create something great!
 |
 */
+
+
+Route::get('/test-mail', function () {
+    $user = User::where('email', 'testofficialmail123@gmail.com')->first();
+    $subscription = Subscription::first();
+
+    Mail::to($user->email)->send(new \App\Mail\SubscriptionCreatedMail($user, $subscription));
+
+    return 'Mail sent!';
+});
 
 
 
@@ -67,7 +80,6 @@ Route::get('/config-clear',function(){
 //     Log::info('Stripe Webhook Received:', $request->all());
 //     return response()->json(['status' => 'success']);
 // });
-// Route::post('/webhook/stripe', [WebhookController::class, 'handleWebhook']);
 Route::controller(StripePaymentController::class)->group(function () {
     Route::get('stripe', 'stripe');
     Route::post('stripe', 'stripePost')->name('stripe.post');
