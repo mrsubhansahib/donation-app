@@ -48,7 +48,8 @@
                                 <td>
                                     {{-- <a href="{{ route('user.subscriptions.show', $subscription->id) }}" class="btn btn-info btn-sm">View</a> --}}
                                     @if ($subscription->status == 'active')
-                                        <a href="{{ route('user.subscriptions.cancel', $subscription->stripe_subscription_id) }}"
+                                        <a href="#"
+                                            onclick="confirm('Are you sure you want to cancel your donation?') ? window.location.href='{{ route('user.subscriptions.cancel', $subscription->stripe_subscription_id) }}' : null"
                                             class="btn btn-danger btn-sm">Cancel</a>
                                     @else
                                         <a href="#" class="btn btn-danger disabled btn-sm">Cancel</a>
