@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Mar 20, 2025 at 12:53 AM
+-- Generation Time: Apr 25, 2025 at 11:15 PM
 -- Server version: 8.0.30
 -- PHP Version: 8.3.14
 
@@ -176,7 +176,7 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `first_name`, `last_name`, `title`, `role`, `email`, `email_verified_at`, `password`, `city`, `country`, `address`, `zip_code`, `stripe_id`, `remember_token`, `created_at`, `updated_at`) VALUES
-(1, 'App', 'Admin', 'Mr', 'admin', 'admin@gmail.com', NULL, '$2y$10$3OweSXTa.u9CpxuCIPi.JegWEMFgq5Kr3LiLOpLa0SEiXM4rWz8CO', '', '', '', '', '', NULL, '2025-03-19 19:53:12', '2025-03-19 19:53:12');
+(1, 'App', 'Admin', 'Mr', 'admin', 'admin@gmail.com', NULL, '$2y$10$VgTwj/CByGxhNnUkrVz2zelRtiqz3azyd402v52JSyRPZV830DO.2', '', '', '', '', '', NULL, '2025-04-25 18:13:44', '2025-04-25 18:13:44');
 
 --
 -- Indexes for dumped tables
