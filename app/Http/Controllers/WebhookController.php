@@ -44,26 +44,14 @@ class WebhookController extends Controller
                 break;
 
             case 'invoice.paid':
-                $this->createInvoice($object);
+                $this->createInvoiceAndTransaction($object);
                 $this->sendInvoicePaidMail($object);
                 break;
 
             case 'invoice.payment_failed':
-                $this->createFailedInvoice($object);
+                $this->createFailedInvoiceAndTransaction($object);
                 $this->sendInvoiceFailedMail($object);
                 break;
-
-            case 'charge.succeeded':
-                $this->createTransaction($object);
-                break;
-
-            case 'payment_intent.payment_failed':
-                $this->createFailedTransaction($object);
-                break;
-
-                // case 'customer.subscription.updated':
-                //     $this->updateSubscription($object);
-                //     break;
         }
 
         return response()->json(['status' => 'success'], 200);
@@ -82,11 +70,6 @@ class WebhookController extends Controller
     {
         $subscription = Subscription::where('stripe_subscription_id', $stripeSubscription['id'])->first();
         if ($subscription) {
-            // $subscription->update([
-            //     'status' => 'canceled',
-            //     'canceled_at' => now(),
-            // ]);
-
             if ($subscription->user) {
                 Mail::to($subscription->user->email)->send(new SubscriptionCanceledMail($subscription->user, $subscription));
                 Log::info("✅ Subscription canceled email sent to: " . $subscription->user->email);
@@ -94,75 +77,81 @@ class WebhookController extends Controller
         }
     }
 
-    private function createInvoice($stripeInvoice)
+    private function createInvoiceAndTransaction($stripeInvoice)
     {
         $subscription = Subscription::where('stripe_subscription_id', $stripeInvoice['subscription'])->first();
 
-        if ($subscription && !Invoice::where('stripe_invoice_id', $stripeInvoice['id'])->exists()) {
-            Invoice::create([
+        if (!$subscription) return;
+
+        // Create Invoice
+        $invoice = Invoice::firstOrCreate(
+            ['stripe_invoice_id' => $stripeInvoice['id']],
+            [
                 'subscription_id' => $subscription->id,
-                'stripe_invoice_id' => $stripeInvoice['id'],
                 'amount' => $stripeInvoice['amount_due'],
                 'invoice_date' => now(),
-                'status' => $stripeInvoice['status'],
-            ]);
-        }
-    }
+                'status' => 'paid',
+            ]
+        );
 
-    private function createFailedInvoice($stripeInvoice)
-    {
-        $subscription = Subscription::where('stripe_subscription_id', $stripeInvoice['subscription'])->first();
+        // Create Transaction
+        $paymentId = $stripeInvoice['charge'] ?? $stripeInvoice['payment_intent'] ?? null;
 
-        if ($subscription && !Invoice::where('stripe_invoice_id', $stripeInvoice['id'])->exists()) {
-            Invoice::create([
-                'subscription_id' => $subscription->id,
-                'stripe_invoice_id' => $stripeInvoice['id'],
-                'amount' => $stripeInvoice['amount_due'],
-                'invoice_date' => now(),
-                'status' => 'failed',
-            ]);
-        }
-    }
-
-    private function createTransaction($stripeCharge)
-    {
-        $invoice = Invoice::where('stripe_invoice_id', $stripeCharge['invoice'])->first();
-
-        if ($invoice && !Transaction::where('stripe_payment_id', $stripeCharge['id'])->exists()) {
+        if ($paymentId && !Transaction::where('stripe_payment_id', $paymentId)->exists()) {
             Transaction::create([
                 'invoice_id' => $invoice->id,
-                'stripe_payment_id' => $stripeCharge['id'],
+                'stripe_payment_id' => $paymentId,
                 'status' => 'succeeded',
                 'paid_at' => now(),
             ]);
-            $user = $invoice->subscription->user ?? null;
+
+            $user = $subscription->user;
             if ($user) {
                 Mail::to($user->email)->send(new TransactionPaidMail($user, $invoice));
-                Log::info("✅ Transaction succeeded email sent to: " . $user->email);
+                Log::info("✅ Invoice + Transaction email sent to: " . $user->email);
             }
         }
     }
 
-    private function createFailedTransaction($paymentIntent)
-    {
-        $invoiceId = $paymentIntent['invoice'] ?? null;
-        $invoice = Invoice::where('stripe_invoice_id', $invoiceId)->first();
 
-        if ($invoice && !Transaction::where('stripe_payment_id', $paymentIntent['id'])->exists()) {
+    private function createFailedInvoiceAndTransaction($stripeInvoice)
+    {
+        $subscription = Subscription::where('stripe_subscription_id', $stripeInvoice['subscription'])->first();
+
+        if (!$subscription) return;
+
+        // Create failed invoice (if it doesn't exist)
+        $invoice = Invoice::firstOrCreate(
+            ['stripe_invoice_id' => $stripeInvoice['id']],
+            [
+                'subscription_id' => $subscription->id,
+                'amount' => $stripeInvoice['amount_due'],
+                'invoice_date' => now(),
+                'status' => 'failed',
+            ]
+        );
+
+        // Create failed transaction
+        $paymentId = $stripeInvoice['charge'] ?? $stripeInvoice['payment_intent'] ?? null;
+
+        if ($paymentId && !Transaction::where('stripe_payment_id', $paymentId)->exists()) {
             Transaction::create([
                 'invoice_id' => $invoice->id,
-                'stripe_payment_id' => $paymentIntent['id'],
+                'stripe_payment_id' => $paymentId,
                 'status' => 'failed',
                 'paid_at' => null,
             ]);
 
-            $user = $invoice->subscription->user ?? null;
+            $user = $subscription->user;
             if ($user) {
                 Mail::to($user->email)->send(new TransactionFailedMail($user, $invoice));
                 Log::info("⚠️ Transaction failed email sent to: " . $user->email);
             }
         }
     }
+
+
+
 
     private function sendInvoicePaidMail($stripeInvoice)
     {
@@ -182,14 +171,4 @@ class WebhookController extends Controller
             Log::info("⚠️ Invoice failed email sent to: " . $subscription->user->email);
         }
     }
-
-    // private function updateSubscription($stripeSubscription)
-    // {
-    //     $subscription = Subscription::where('stripe_subscription_id', $stripeSubscription['id'])->first();
-    //     if ($subscription) {
-    //         $subscription->update([
-    //             'status' => $stripeSubscription['status'],
-    //         ]);
-    //     }
-    // }
 }
