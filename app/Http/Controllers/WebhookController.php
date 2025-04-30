@@ -69,13 +69,26 @@ class WebhookController extends Controller
     private function cancelSubscription($stripeSubscription)
     {
         $subscription = Subscription::where('stripe_subscription_id', $stripeSubscription['id'])->first();
+    
         if ($subscription) {
+            // ✅ Update local DB to cancel
+            $subscription->update([
+                'status' => 'canceled',
+                'canceled_at' => now()
+            ]);
+    
+            // ✅ Send email if user exists
             if ($subscription->user) {
                 Mail::to($subscription->user->email)->send(new SubscriptionCanceledMail($subscription->user, $subscription));
                 Log::info("✅ Subscription canceled email sent to: " . $subscription->user->email);
             }
+    
+            Log::info("🗂️ Local subscription marked as canceled: " . $subscription->id);
+        } else {
+            Log::warning("⚠️ Subscription not found for Stripe ID: " . $stripeSubscription['id']);
         }
     }
+    
 
     private function createInvoiceAndTransaction($stripeInvoice)
     {
