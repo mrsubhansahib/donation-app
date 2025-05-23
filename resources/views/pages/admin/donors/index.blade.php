@@ -1,14 +1,23 @@
 @extends('layout.master')
 
 @section('content')
-    <div class="container mt-4">
-        <h2 class="mb-4">All Donors</h2>
+    <nav class="page-breadcrumb">
+        <div class="d-flex align-items-baseline">
+
+            <ol class="breadcrumb" style="font-size: 17px; font-weight: bold;">
+                <li class="breadcrumb-item"><a href="#">Donors</a></li>
+                <li class="breadcrumb-item active" aria-current="page">List</li>
+            </ol>
+        </div>
+
+    </nav>
+    <div class="container">
         <div class="card shadow">
             <div class="card-body">
                 <table id="dataTableExample" class="table">
                     <thead class="thead-dark">
                         <tr>
-                            <th>No#</th>
+                            {{-- <th>No#</th> --}}
                             <th>Name</th>
                             <th>Email</th>
                             <th>Active Donations</th>
@@ -18,7 +27,7 @@
                     <tbody>
                         @foreach ($donors as $donor)
                             <tr>
-                               <td>{{ $loop->iteration }}</td>
+                                {{-- <td>{{ $loop->iteration }}</td> --}}
                                 <td>{{ $donor->first_name }} {{ $donor->last_name }}</td>
                                 <td>{{ $donor->email }}</td>
 

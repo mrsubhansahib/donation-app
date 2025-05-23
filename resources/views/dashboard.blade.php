@@ -5,12 +5,17 @@
 @endpush
 
 @section('content')
-    @include('layout.messages')
-    <div class="d-flex justify-content-between align-items-center flex-wrap grid-margin">
-        <div>
-            <h4 class="mb-3 mb-md-0">Welcome to Dashboard</h4>
+    <nav class="page-breadcrumb">
+        <div class="d-flex align-items-baseline">
+
+            <ol class="breadcrumb" style="font-size: 17px; font-weight: bold;">
+                <li class="breadcrumb-item"><a href="#">Donation</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Dashboard</li>
+            </ol>
         </div>
-    </div>
+
+    </nav>
+    @include('layout.messages')
 
     <div class="row">
         <div class="col-12 col-xl-12 stretch-card">
@@ -80,7 +85,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-4 grid-margin stretch-card">
+                    {{-- <div class="col-md-4 grid-margin stretch-card">
                         <div class="card">
                             <div class="card-body">
                                 <div class="d-flex justify-content-between align-items-baseline">
@@ -91,7 +96,7 @@
                                 <h3 class="mb-2 ms-4">{{ count($my_transactions) }}</h3>
                             </div>
                         </div>
-                    </div>
+                    </div> --}}
                 @endif
             </div>
         </div>

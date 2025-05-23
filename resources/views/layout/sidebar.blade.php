@@ -1,6 +1,6 @@
 <nav class="sidebar">
     <div class="sidebar-header">
-        <a href="{{route('dashboard')}}" class="sidebar-brand">
+        <a href="{{ route('dashboard') }}" class="sidebar-brand">
             Donation<span>App</span>
         </a>
         <div class="sidebar-toggler not-active">
@@ -20,7 +20,6 @@
             </li>
             <!-- User Links -->
             @if (auth()->user()->role === 'donar')
-              
                 <li class="nav-item {{ active_class(['/user/subscriptions']) }}">
                     <a href="{{ route('user.subscriptions.index') }}" class="nav-link">
                         <i class="link-icon" data-feather="layers"></i>
@@ -33,12 +32,12 @@
                         <span class="link-title">My Invoices</span>
                     </a>
                 </li>
-                <li class="nav-item {{ active_class(['/user/transactions']) }}">
-                  <a href="{{ route('user.transactions.index') }}" class="nav-link">
-                      <i class="link-icon" data-feather="pocket"></i>
-                      <span class="link-title">My Transactions</span>
-                  </a>
-              </li>
+                {{-- <li class="nav-item {{ active_class(['/user/transactions']) }}">
+                    <a href="{{ route('user.transactions.index') }}" class="nav-link">
+                        <i class="link-icon" data-feather="pocket"></i>
+                        <span class="link-title">My Transactions</span>
+                    </a>
+                </li> --}}
             @endif
 
             <!-- Admin Links -->
@@ -49,7 +48,7 @@
                         <span class="link-title">All Donors</span>
                     </a>
                 </li>
-                
+
                 <li class="nav-item {{ active_class(['/admin/subscriptions']) }}">
                     <a href="{{ route('admin.subscriptions.index') }}" class="nav-link">
                         <i class="link-icon" data-feather="layers"></i>
@@ -63,11 +62,11 @@
                     </a>
                 </li>
                 <li class="nav-item {{ active_class(['/admin/transactions']) }}">
-                  <a href="{{ route('admin.transactions.index') }}" class="nav-link">
-                      <i class="link-icon" data-feather="pocket"></i>
-                      <span class="link-title">All Transactions</span>
-                  </a>
-              </li>
+                    <a href="{{ route('admin.transactions.index') }}" class="nav-link">
+                        <i class="link-icon" data-feather="pocket"></i>
+                        <span class="link-title">All Transactions</span>
+                    </a>
+                </li>
             @endif
 
 

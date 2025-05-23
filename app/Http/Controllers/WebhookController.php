@@ -69,26 +69,28 @@ class WebhookController extends Controller
     private function cancelSubscription($stripeSubscription)
     {
         $subscription = Subscription::where('stripe_subscription_id', $stripeSubscription['id'])->first();
-    
+
         if ($subscription) {
-            // ✅ Update local DB to cancel
-            $subscription->update([
-                'status' => 'canceled',
-                'canceled_at' => now()
-            ]);
-    
-            // ✅ Send email if user exists
-            if ($subscription->user) {
-                Mail::to($subscription->user->email)->send(new SubscriptionCanceledMail($subscription->user, $subscription));
-                Log::info("✅ Subscription canceled email sent to: " . $subscription->user->email);
+            if ($subscription->status === 'canceled') {
+                Log::info("⚠️ Subscription already canceled: " . $subscription->id);
+            } else {
+                $subscription->update([
+                    'status' => 'canceled',
+                    'canceled_at' => now()->subDay()
+                ]);
             }
-    
+            // ✅ Send email if user exists
+            // if ( $subscription->user) {
+            Mail::to($subscription->user->email)->send(new SubscriptionCanceledMail($subscription->user, $subscription));
+            Log::info("✅ Subscription canceled email sent to: " . $subscription->user->email);
+            // }
+
             Log::info("🗂️ Local subscription marked as canceled: " . $subscription->id);
         } else {
             Log::warning("⚠️ Subscription not found for Stripe ID: " . $stripeSubscription['id']);
         }
     }
-    
+
 
     private function createInvoiceAndTransaction($stripeInvoice)
     {
@@ -118,11 +120,11 @@ class WebhookController extends Controller
                 'paid_at' => now(),
             ]);
 
-            $user = $subscription->user;
-            if ($user) {
-                Mail::to($user->email)->send(new TransactionPaidMail($user, $invoice));
-                Log::info("✅ Invoice + Transaction email sent to: " . $user->email);
-            }
+            // $user = $subscription->user;
+            // if ($user) {
+            //     Mail::to($user->email)->send(new TransactionPaidMail($user, $invoice));
+            //     Log::info("✅ Invoice + Transaction email sent to: " . $user->email);
+            // }
         }
     }
 
@@ -155,11 +157,11 @@ class WebhookController extends Controller
                 'paid_at' => null,
             ]);
 
-            $user = $subscription->user;
-            if ($user) {
-                Mail::to($user->email)->send(new TransactionFailedMail($user, $invoice));
-                Log::info("⚠️ Transaction failed email sent to: " . $user->email);
-            }
+            // $user = $subscription->user;
+            // if ($user) {
+            //     Mail::to($user->email)->send(new TransactionFailedMail($user, $invoice));
+            //     Log::info("⚠️ Transaction failed email sent to: " . $user->email);
+            // }
         }
     }
 

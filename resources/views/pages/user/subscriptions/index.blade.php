@@ -1,13 +1,23 @@
 @extends('layout.master')
 @section('content')
-    <div class="container mt-4">
-        <h2 class="mb-4">Your Donations</h2>
+    <nav class="page-breadcrumb">
+        <div class="d-flex align-items-baseline">
+
+            <ol class="breadcrumb" style="font-size: 17px; font-weight: bold;">
+                <li class="breadcrumb-item"><a href="#">Donations</a></li>
+                <li class="breadcrumb-item active" aria-current="page">List</li>
+            </ol>
+        </div>
+
+    </nav>
+    @include('layout.messages')
+    <div class="container ">
         <div class="card shadow">
             <div class="card-body">
                 <table id="dataTableExample" class="table">
                     <thead class="thead-dark">
                         <tr>
-                            <th>No#</th>
+                            {{-- <th>No#</th> --}}
                             <th>Donation Type</th>
                             <th>Amount</th>
                             <th>Status</th>
@@ -19,7 +29,7 @@
                     <tbody>
                         @foreach ($subscriptions as $subscription)
                             <tr>
-                                <td>{{ $loop->iteration }}</td>
+                                {{-- <td>{{ $loop->iteration }}</td> --}}
                                 <td>
                                     @if ($subscription->type == 'day')
                                         Daily
@@ -31,11 +41,11 @@
                                 </td>
                                 <td>
                                     @if ($subscription->currency == 'usd')
-                                        {{ $subscription->price ? number_format($subscription->price, 2) : '0' }} $
+                                        $ {{ $subscription->price ? number_format($subscription->price, 2) : '0' }}  
                                     @elseif($subscription->currency == 'gbp')
-                                        {{ $subscription->price ? number_format($subscription->price, 2) : '0' }} £
+                                        £ {{ $subscription->price ? number_format($subscription->price, 2) : '0' }} 
                                     @elseif($subscription->currency == 'eur')
-                                        {{ $subscription->price ? number_format($subscription->price, 2) : '0' }} €
+                                        € {{ $subscription->price ? number_format($subscription->price, 2) : '0' }} 
                                     @endif
                                 </td>
                                 <td>

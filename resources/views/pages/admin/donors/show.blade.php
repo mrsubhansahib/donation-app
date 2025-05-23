@@ -1,8 +1,17 @@
 @extends('layout.master')
 
 @section('content')
-    <div class="container mt-4">
-        <h2 class="mb-4">Donor Details</h2>
+   <nav class="page-breadcrumb">
+        <div class="d-flex align-items-baseline">
+
+            <ol class="breadcrumb" style="font-size: 17px; font-weight: bold;">
+                <li class="breadcrumb-item"><a href="#">Donation</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Details</li>
+            </ol>
+        </div>
+
+    </nav>
+    <div class="container">
 
         <div class="card shadow mb-4">
             <div class="card-body">
@@ -35,7 +44,7 @@
                 <table id="" class="table dataTableExample">
                     <thead class="thead-dark">
                         <tr>
-                            <th>No#</th>
+                            {{-- <th>No#</th> --}}
                             <th>Donation Type</th>
                             <th>Amount</th>
                             <th>Status</th>
@@ -48,7 +57,7 @@
                     <tbody>
                         @foreach ($subscriptions as $subscription)
                             <tr>
-                                <td>{{ $loop->iteration }}</td>
+                                {{-- <td>{{ $loop->iteration }}</td> --}}
                                 <td>
                                     @if ($subscription->type == 'day')
                                         Daily
@@ -60,11 +69,11 @@
                                 </td>
                                 <td>
                                     @if ($subscription->currency == 'usd')
-                                        {{ $subscription->price ? number_format($subscription->price, 2) : '0' }} $
+                                       $ {{ $subscription->price ? number_format($subscription->price, 2) : '0' }} 
                                     @elseif($subscription->currency == 'gbp')
-                                        {{ $subscription->price ? number_format($subscription->price, 2) : '0' }} £
+                                       £ {{ $subscription->price ? number_format($subscription->price, 2) : '0' }} 
                                     @elseif($subscription->currency == 'eur')
-                                        {{ $subscription->price ? number_format($subscription->price, 2) : '0' }} €
+                                       € {{ $subscription->price ? number_format($subscription->price, 2) : '0' }} 
                                     @endif
                                 </td>
                                 <td>{{ ucfirst($subscription->status) }}</td>
@@ -87,7 +96,7 @@
                 <table id="" class="table dataTableExample">
                     <thead class="thead-dark">
                         <tr>
-                            <th>No#</th>
+                            {{-- <th>No#</th> --}}
                             <th>Donation Type</th>
                             <th>Amount</th>
                             <th>Status</th>
@@ -98,7 +107,7 @@
                     <tbody>
                         @foreach ($invoices as $invoice)
                             <tr>
-                                <td>{{ $loop->iteration }}</td>
+                                {{-- <td>{{ $loop->iteration }}</td> --}}
                                 <td>
                                     @if ($invoice->subscription->type == 'day')
                                         Daily
@@ -110,11 +119,11 @@
                                 </td>
                                 <td>
                                     @if ($invoice->subscription->currency == 'usd')
-                                        {{ $invoice->amount / 100 }} $
+                                        $ {{ number_format($invoice->amount / 100, 2) }} 
                                     @elseif($invoice->subscription->currency == 'gbp')
-                                        {{ $invoice->amount / 100 }} £
+                                        £ {{ number_format($invoice->amount / 100, 2) }} 
                                     @elseif($invoice->subscription->currency == 'eur')
-                                        {{ $invoice->amount / 100 }} €
+                                        € {{ number_format($invoice->amount / 100, 2) }} 
                                     @endif
                                 </td>
                                 <td>{{ ucfirst($invoice->status) }}</td>
@@ -136,7 +145,7 @@
                 <table id="" class="table dataTableExample">
                     <thead class="thead-dark">
                         <tr>
-                            <th>No#</th>
+                            {{-- <th>No#</th> --}}
                             <th>Donation Type</th>
                             <th>Amount</th>
                             <th>Status</th>
@@ -147,7 +156,7 @@
                     <tbody>
                         @foreach ($transactions as $transaction)
                             <tr>
-                                <td>{{ $loop->iteration }}</td>
+                                {{-- <td>{{ $loop->iteration }}</td> --}}
                                 <td>
                                     @if ($transaction->invoice->subscription->type == 'day')
                                         Daily
@@ -159,11 +168,11 @@
                                 </td>
                                 <td>
                                     @if ($transaction->invoice->subscription->currency == 'usd')
-                                        {{ $transaction->invoice->amount / 100 }} $
+                                        $ {{ number_format($transaction->invoice->amount / 100, 2) }}
                                     @elseif($transaction->invoice->subscription->currency == 'gbp')
-                                        {{ $transaction->invoice->amount / 100 }} £
+                                        £ {{ number_format($transaction->invoice->amount / 100, 2) }}
                                     @elseif($transaction->invoice->subscription->currency == 'eur')
-                                        {{ $transaction->invoice->amount / 100 }} €
+                                        € {{ number_format($transaction->invoice->amount / 100, 2) }}
                                     @endif
                                 </td>
                                 <td>{{ ucfirst($transaction->status) }}</td>
