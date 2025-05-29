@@ -8,9 +8,8 @@
     <title>Donation App</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
-        <style>
-
-          body {
+    <style>
+        body {
             font-family: Arial, sans-serif;
             background-color: #e6ebf1;
         }
@@ -38,7 +37,7 @@
             cursor: pointer;
         }
 
-        .post-card h5{
+        .post-card h5 {
             font-size: 25px;
         }
 
@@ -48,7 +47,8 @@
         }
 
         .post-card:hover {
-            transform: translateY(-5px); /* Slightly lift the card */
+            transform: translateY(-5px);
+            /* Slightly lift the card */
             box-shadow: 0 10px 15px rgba(0, 0, 0, 0.2), 0 3px 6px rgba(0, 0, 0, 0.1);
         }
 
@@ -78,7 +78,7 @@
             font-size: 15px;
         }
 
-        .card-footer button{
+        .card-footer button {
             padding: 10px 20px;
             border: none;
             border-radius: 10px;
@@ -86,83 +86,100 @@
             color: white;
         }
 
-        .card-footer button:hover{
+        .card-footer button:hover {
             background-color: black;
         }
     </style>
 </head>
 
 <body>
-  <div class="container text-center mt-5">
-    <div class="d-flex justify-content-around">
-      <div class=""></div>
-      <h1 style="font-weight: 800;    margin-bottom: 0;">DONATION FORM</h1>
-      @if (auth()->check())
-      <button class="btn px-4  btn-secondary" onclick="window.location.href='{{route('dashboard')}}'">Dashboard</button>
-        @else
-        <button class="btn px-4  btn-secondary" onclick="window.location.href='{{route('login')}}'">Login</button>
-      @endif
+    <div class="container text-center mt-5">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div class="" style="visibility: hidden">
+                @if (auth()->check())
+                <h1>123456</h1>
+                @else
+                <h1>1234567890</h1>
+                @endif
+            </div>
+            <h1 style="font-weight: 800;    margin-bottom: 0;">DONATION FORM</h1>
+            @if (auth()->check())
+                <div class="">
+
+                    <button class="btn px-4  btn-secondary"
+                        onclick="window.location.href='{{ route('dashboard') }}'">Dashboard</button>
+                </div>
+            @else
+                <div class="">
+
+                    <button class="btn px-4  btn-primary" onclick="window.location.href='{{ route('login') }}'">Sign
+                        In</button>
+                    <button class="btn px-4  btn-secondary"
+                        onclick="window.location.href='{{ route('register') }}'">Sign Up</button>
+                </div>
+            @endif
+        </div>
+        <div class="m-auto" style="width: 5% !important;">
+            <hr style="height: 4px;">
+        </div>
+        <p>Browse our donation form to find a starting point.</p>
     </div>
-    <div class="m-auto" style="width: 5% !important;">
-      <hr style="height: 4px;">
-    </div>
-    <p>Browse our donation form to find a starting point.</p>
-  </div>
-  
-<div class="container">
-  <!-- card-1 -->
-  <div class="row mt-5">
-      <div class="col-md-4">
-          <div class="card post-card"  onclick="window.location.href='{{URL::to('/donation/regular')}}';">
-              <img src="{{asset('assets/images/donate.jpg')}}" class="card-img-top" alt="Post 1">
-              {{-- <div class="card-body">
+
+    <div class="container">
+        <!-- card-1 -->
+        <div class="row mt-5">
+            <div class="col-md-4">
+                <div class="card post-card" onclick="window.location.href='{{ URL::to('/donation/regular') }}';">
+                    <img src="{{ asset('assets/images/donate.jpg') }}" class="card-img-top" alt="Post 1">
+                    {{-- <div class="card-body">
                   <h5 class="card-title">How to get the most out of VehicleScore</h5>
                   <div class="text-area">
                       <p class="card-text">You've got your creditscore, but have you got your VehicleScore? This blog covers what VehicleScore is, and how it can help you in your search for a new vehicle...</p>
                   </div>
               </div> --}}
-              
-              <div class="card-footer d-flex justify-content-center">                  
-                  <p style="margin: 0;padding: 10px;font-size: 18px;font-weight: 600;">Daily / Weekly / Monthly Giving</p>
-              </div>
-          </div>
-      </div>
-      <!-- card-2 -->
-      <div class="col-md-4">
-          <div class="card post-card"  onclick="alert('Coming Soon!');">
-              <img src="{{asset('assets/images/donate.jpg')}}" class="card-img-top" alt="Post 2">
-              {{-- <div class="card-body">
+
+                    <div class="card-footer d-flex justify-content-center">
+                        <p style="margin: 0;padding: 10px;font-size: 18px;font-weight: 600;">Daily / Weekly / Monthly
+                            Giving</p>
+                    </div>
+                </div>
+            </div>
+            <!-- card-2 -->
+            <div class="col-md-4">
+                <div class="card post-card" onclick="alert('Coming Soon!');">
+                    <img src="{{ asset('assets/images/donate.jpg') }}" class="card-img-top" alt="Post 2">
+                    {{-- <div class="card-body">
                   <h5 class="card-title">SMMT Urges UK Government to Take Action on £106bn Opportunity</h5>
                   <div class="text-area">
                       <p class="card-text">You've got your creditscore, but have you got your VehicleScore? This blog covers what VehicleScore is, and how it can help you in your search for a new vehicle...</p>
                   </div>
               </div> --}}
-              
-              <div class="card-footer d-flex justify-content-center">
-                  <p style="margin: 0;padding: 10px;font-size: 18px;font-weight: 600;">Friday Giving</p>
-              </div>
-          </div>
-      </div>
-      <!-- card-3 -->
-      <div class="col-md-4">
-          <div class="card post-card"  onclick="alert('Coming Soon!');">
-              <img src="{{asset('assets/images/donate.jpg')}}" class="card-img-top" alt="Post 3">
-              {{-- <div class="card-body">
+
+                    <div class="card-footer d-flex justify-content-center">
+                        <p style="margin: 0;padding: 10px;font-size: 18px;font-weight: 600;">Friday Giving</p>
+                    </div>
+                </div>
+            </div>
+            <!-- card-3 -->
+            <div class="col-md-4">
+                <div class="card post-card" onclick="alert('Coming Soon!');">
+                    <img src="{{ asset('assets/images/donate.jpg') }}" class="card-img-top" alt="Post 3">
+                    {{-- <div class="card-body">
                   <h5 class="card-title">London ULEZ Explainsion Explained</h5>
                   <div class="text-area">
                       <p class="card-text">You've got your creditscore, but have you got your VehicleScore? This blog covers what VehicleScore is, and how it can help you in your search for a new vehicle...</p>
                   </div>
               </div> --}}
-              
-              <div class="card-footer d-flex justify-content-center">
-                
-                <p style="margin: 0;padding: 10px;font-size: 18px;font-weight: 600;">Ramadan Giving</p>
-              </div>
-          </div>
-      </div>
-      <!-- Add more posts similarly -->
-  </div>
-</div>
+
+                    <div class="card-footer d-flex justify-content-center">
+
+                        <p style="margin: 0;padding: 10px;font-size: 18px;font-weight: 600;">Ramadan Giving</p>
+                    </div>
+                </div>
+            </div>
+            <!-- Add more posts similarly -->
+        </div>
+    </div>
 
 
 

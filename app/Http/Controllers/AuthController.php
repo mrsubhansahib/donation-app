@@ -115,4 +115,25 @@ class AuthController extends Controller
     {
         //
     }
+    public function register(Request $request)
+    {
+        $data = $request->validate([
+            'title' => 'required',
+            'first_name' => 'required',
+            'last_name' => 'required',
+            'email' => 'required|email|unique:users,email',
+            'country' => 'required',
+            'city' => 'required',
+            'address' => 'required',
+            'zip_code' => 'required',
+            'password' => 'required|min:6|confirmed',
+        ]);
+
+        $data['password'] = Hash::make($data['password']);
+        $data['stripe_id'] ='';
+        $user = User::create($data);
+        Auth::login($user);
+
+        return redirect()->route('dashboard')->with('success', 'Registration successful');
+    }
 }

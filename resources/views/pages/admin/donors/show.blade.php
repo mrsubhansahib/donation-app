@@ -188,7 +188,7 @@
 
         <a href="{{ auth()->user()->role == 'admin' ? route('admin.donors.index') : route('admin.donors.dashboard') }}"
             class="btn btn-secondary mt-3">
-            Back to Users
+            Back to Donors List
         </a>
     </div>
 @endsection
@@ -204,6 +204,7 @@
                         [10, 30, 50, -1],
                         [10, 30, 50, "All"]
                     ],
+                    'ordering': false,
                     "iDisplayLength": 10,
                     "language": {
                         search: ""

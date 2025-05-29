@@ -50,8 +50,8 @@
                     <label for="type">Type</label>
                     <select name="type" id="type" class="form-control">
                         <option selected value="day" {{ old('type') == 'day' ? 'selected' : '' }}>Daily</option>
-                        <option disabled value="week" {{ old('type') == 'week' ? 'selected' : '' }}>Weekly</option>
-                        <option disabled value="month" {{ old('type') == 'month' ? 'selected' : '' }}>Monthly</option>
+                        <option value="week" {{ old('type') == 'week' ? 'selected' : '' }}>Weekly</option>
+                        {{-- <option disabled value="month" {{ old('type') == 'month' ? 'selected' : '' }}>Monthly</option> --}}
                     </select>
                 </div>
                 <div class="col-md-6 mt-3">
@@ -65,67 +65,6 @@
                         value="{{ old('cancellation', date('Y-m-d', strtotime('+1 month'))) }}" required>
                 </div>
             </div>
-            <h2 class="mt-4 mb-2">Address Details</h2>
-            <div class="row border-2 borderd-dark border p-3 pb-4 form-card">
-                <div class="col-md-2">
-                    <label for="title">Title</label>
-                    <select name="title" id="title" class="form-control">
-                        <option selected value="mr">Mr</option>
-                        <option value="mrs">Mrs</option>
-                        <option value="miss">Miss</option>
-                        <option value="dr">Dr</option>
-                        <option value="prof">Prof</option>
-                    </select>
-                </div>
-                <div class="col-md-10">
-                    <label for="first_name">First Name</label>
-                    <input type="text" name="first_name" id="first_name" value="{{ old('first_name') }}"
-                        class="form-control" required>
-                </div>
-                <div class="col-md-6 mt-3">
-                    <label for="last_name">Last Name</label>
-                    <input type="text" name="last_name" id="last_name" class="form-control"
-                        value="{{ old('last_name') }}" required>
-                </div>
-                <div class="col-md-6 mt-3">
-                    <label for="email">Email</label>
-                    <input type="email" name="email" id="email" class="form-control"
-                        value="{{ old('email') }}" required>
-                </div>
-                <div class="col-md-6 mt-3">
-                    <label for="password">Password</label>
-                    <input type="password" name="password" id="password" class="form-control" required>
-                </div>
-                <div class="col-md-6 mt-3">
-                    <label for="country">Country</label>
-                    <input type="text" name="country" id="country" class="form-control"
-                        value="{{ old('country') }}" required>
-                </div>
-                <div class="col-md-4 mt-3">
-                    <label for="city">City</label>
-                    <input type="text" name="city" id="city" class="form-control"
-                        value="{{ old('city') }}" required>
-                </div>
-                <div class="col-md-4 mt-3">
-                    <label for="address">Address</label>
-                    <input type="text" name="address" id="address" class="form-control"
-                        value="{{ old('address') }}" required>
-                </div>
-                <div class="col-md-4 mt-3">
-                    <label for="zip_code">ZipCode</label>
-                    <input type="text" name="zip_code" id="zip_code" class="form-control"
-                        value="{{ old('zip_code') }}" required>
-                </div>
-
-                <div class="col-md-12 mt-3">
-
-                    <label for="tax_payer" class="d-flex"><input type="checkbox" name="tax_payer" id="tax_payer"
-                            > &nbsp;&nbsp;&nbsp;Yes, I am a UK tax payer and would like Gift Aid claimed on my
-                        donations
-                    </label>
-                </div>
-
-            </div>
             <h2 class="mt-4 mb-2">Card Details</h2>
             <div class="row border-2 borderd-dark border p-3 pb-4 pt-5 form-card">
                 <!-- Stripe Elements Card -->
@@ -135,7 +74,12 @@
                     <div id="card-errors" role="alert"></div>
                 </div>
                 <div class="col-md-12 mt-3 m-auto   w-50">
+                    @if (auth()->check())
+                        
                     <button type="submit" class="btn btn-md btn-secondary w-100 ">Submit</button>
+                    @else
+                    <button type="button" class="btn btn-md btn-secondary w-100 " onclick="window.location.href='{{ route('login') }}'">Submit</button>                    
+                    @endif
                 </div>
             </div>
         </form>

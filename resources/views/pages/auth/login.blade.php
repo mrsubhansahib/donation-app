@@ -19,7 +19,7 @@
                     <div class="row">
                         <div class="col-md-4 pe-md-0">
                             <div class="auth-side-wrapper"
-                                style="background-image: url({{ url('https://via.placeholder.com/219x452') }})">
+                                style="background-image: url({{ asset('assets/images/login.png') }});image-cover: cover;">
 
                             </div>
                         </div>
@@ -31,7 +31,7 @@
                                     @csrf
                                     <div class="mb-3">
                                         <label for="userEmail" class="form-label">Email address</label>
-                                        <input type="email" name="email" required class="form-control" id="userEmail"
+                                        <input type="email" value="{{ old('email') }}" name="email" required class="form-control" id="userEmail"
                                             placeholder="Email">
                                     </div>
                                     <div class="mb-3">
@@ -46,7 +46,7 @@
                   </label>
                 </div> --}}
                                     <div class="d-flex justify-content-between align-items-center">
-                                        <button type="submit" class="btn btn-primary me-2 mb-2 mb-md-0">Login</button>
+                                        <button type="submit" class="btn btn-primary me-2 mb-2 mb-md-0">Sign in</button>
                                         <a href="{{ route('home') }}" class="btn btn-dark me-2 mb-2 mb-md-0">
                                             <i class="me-2 icon-md" data-feather="home"></i>
                                             Back to Home
@@ -56,7 +56,7 @@
                     Login with twitter
                   </button> --}}
                                     </div>
-                                    {{-- <a href="{{ url('/auth/register') }}" class="d-block mt-3 text-muted">Not a user? Sign up</a> --}}
+                                    <a href="{{ url('/auth/register') }}" class="d-block mt-3 text-muted">Not a user? Sign up</a>
                                 </form>
                             </div>
                         </div>

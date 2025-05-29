@@ -44,6 +44,7 @@ Route::get('/', function () {
     return view('pages.index');
 })->name('home');
 //Commands 
+
 Route::get('/run-schedule', function () {
     Artisan::call('schedule:run');
     return 'Scheduler executed successfully!';
@@ -91,6 +92,13 @@ Route::prefix('auth')->group(function () {
         return view('pages.auth.login');
     })->name('login');
     Route::post('login-attempt', [AuthController::class, 'login'])->name('login-attempt');
+    Route::get('register', function () {
+        return view('pages.auth.register');
+    })->name('register');
+    Route::post('register', [AuthController::class, 'register'])->name('register-attempt');
+    Route::get('forgot-password', function () {
+        return view('pages.auth.forgot-password');
+    })->name('forgot-password');
 });
 
 Route::middleware(['auth'])->group(function () {

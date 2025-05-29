@@ -14,7 +14,7 @@ $(function () {
             language: {
                 search: "",
             },
-          
+           ordering: false,
         });
         $("#dataTableExample").each(function () {
             var datatable = $(this);
