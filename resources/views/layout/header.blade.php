@@ -3,7 +3,7 @@
         <i data-feather="menu"></i>
     </a>
     <div class="navbar-content">
-        <form class="search-form">
+        <form class="search-form" style="width: 60%;">
             <div class="input-group">
                 <div class="input-group-text">
                     <i data-feather="search"></i>
@@ -192,6 +192,14 @@
           </div>
         </div>
       </li> --}}
+            <li class="nav-item d-flex align-items-center me-3">
+                <a href="{{ route('home') }}" 
+                  class="btn btn-primary d-flex align-items-center gap-2 px-3 py-2 shadow-sm"
+                  style="border-radius: 25px; line-height: 1;" title="Donate Now">
+                    <i class="bi bi-heart-fill fs-5"></i>
+                    Donate Now
+                </a>
+            </li>
             <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" href="#" id="profileDropdown" role="button"
                     data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
