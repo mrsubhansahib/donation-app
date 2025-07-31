@@ -26,6 +26,6 @@ class DatabaseSeeder extends Seeder
             'address' => '',
             'zip_code' => '',
             'stripe_id' => '',
-            ]);
+        ]);
     }
 }

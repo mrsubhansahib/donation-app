@@ -112,9 +112,9 @@
             @else
                 <div class="">
 
-                    <button class="btn px-4  btn-primary" onclick="window.location.href='{{ route('login') }}'">Sign
+                    <button class="btn px-4 my-1  btn-primary" onclick="window.location.href='{{ route('login') }}'">Sign
                         In</button>
-                    <button class="btn px-4  btn-secondary"
+                    <button class="btn px-4 my-1  btn-secondary"
                         onclick="window.location.href='{{ route('register') }}'">Sign Up</button>
                 </div>
             @endif
@@ -128,7 +128,7 @@
     <div class="container">
         <!-- card-1 -->
         <div class="row mt-5">
-            <div class="col-md-4">
+            <div class="col-md-6 col-lg-4">
                 <div class="card post-card" onclick="window.location.href='{{ URL::to('/donation/regular') }}';">
                     <img src="{{ asset('assets/images/donate.jpg') }}" class="card-img-top" alt="Post 1">
                     {{-- <div class="card-body">
@@ -145,7 +145,7 @@
                 </div>
             </div>
             <!-- card-2 -->
-            <div class="col-md-4">
+            <div class="col-md-6 col-lg-4">
                 <div class="card post-card" onclick="alert('Coming Soon!');">
                     <img src="{{ asset('assets/images/donate.jpg') }}" class="card-img-top" alt="Post 2">
                     {{-- <div class="card-body">
@@ -161,7 +161,7 @@
                 </div>
             </div>
             <!-- card-3 -->
-            <div class="col-md-4">
+            <div class="col-md-6 col-lg-4">
                 <div class="card post-card" onclick="alert('Coming Soon!');">
                     <img src="{{ asset('assets/images/donate.jpg') }}" class="card-img-top" alt="Post 3">
                     {{-- <div class="card-body">
