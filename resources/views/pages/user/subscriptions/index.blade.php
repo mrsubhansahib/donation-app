@@ -56,7 +56,7 @@
                                     {{ $subscription->end_date ? \Carbon\Carbon::parse($subscription->end_date)->format('d-m-Y') : 'N/A' }}
                                 </td>
                                 <td>
-                                    {{-- <a href="{{ route('user.subscriptions.show', $subscription->id) }}" class="btn btn-info btn-sm">View</a> --}}
+                                    <a href="{{ route('user.subscriptions.show', $subscription->id) }}" class="btn btn-info btn-sm">View</a>
                                     @if ($subscription->status == 'active')
                                         <a href="#"
                                             onclick="confirm('Are you sure you want to cancel your donation?') ? window.location.href='{{ route('user.subscriptions.cancel', $subscription->stripe_subscription_id) }}' : null"
