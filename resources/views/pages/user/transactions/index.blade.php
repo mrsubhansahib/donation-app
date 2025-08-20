@@ -45,7 +45,7 @@
                                 <td>
 
                                     <a href="{{ route('user.transactions.show', $transaction->id) }}" class="btn btn-info btn-sm">View</a>
-                                    <a href="#" onclick="alert('Coming Soon!')" class="btn btn-info btn-sm">View</a>
+                                    <!-- <a href="#" onclick="alert('Coming Soon!')" class="btn btn-info btn-sm">View</a> -->
                                 </td>
                             </tr>
                         @endforeach

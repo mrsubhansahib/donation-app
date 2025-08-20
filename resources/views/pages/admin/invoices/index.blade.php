@@ -60,8 +60,8 @@
                                 <td>{{ \Carbon\Carbon::parse($invoice->invoice_date)->format('d-m-Y H:i') }}</td>
 
                                 <td>
-                                    {{-- <a href="{{ route('user.invoices.show', $invoice->id) }}" class="btn btn-info btn-sm">View</a> --}}
-                                    <a href="#" onclick="alert('Coming Soon!')" class="btn btn-info btn-sm">View</a>
+                                    <a href="{{ route('user.invoices.show', $invoice->id) }}" class="btn btn-info btn-sm">View</a>
+                                    <!-- <a href="#" onclick="alert('Coming Soon!')" class="btn btn-info btn-sm">View</a> -->
                                     {{-- @if ($invoice->status == 'paid' && $invoice->invoice_pdf)
                                     <a href="{{ $invoice->invoice_pdf }}" target="_blank" class="btn btn-primary btn-sm">Download</a>
                                 @endif --}}
