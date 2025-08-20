@@ -53,7 +53,7 @@ class StripePaymentController extends Controller
 
     public function stripePost(Request $request)
     {
-      
+        // dd($request->all());
 
         DB::beginTransaction();
         try {
@@ -91,7 +91,7 @@ class StripePaymentController extends Controller
                 'week' => $startDate->copy()->addWeeks($weeks)->startOfDay(),
                 default => $startDate->copy()->addMonth()->startOfDay(),
             };
-            $billingAnchor = $startDate->isPast() ? Carbon::now()->addMinute()->timestamp : $startDate->timestamp;
+            $billingAnchor = $startDate->isPast() ? Carbon::now()->addMinute(2)->timestamp : $startDate->timestamp;
 
             $subscription = Stripe\Subscription::create([
                 'customer' => $customer->id,
