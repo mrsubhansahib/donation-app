@@ -64,7 +64,6 @@
                                     @else
                                         <a href="#" class="btn btn-danger disabled btn-sm">Cancel</a>
                                     @endif
-                                    <a href="#" onclick="alert('Coming Soon!')" class="btn btn-info btn-sm">View</a>
                                 </td>
                             </tr>
                         @endforeach
