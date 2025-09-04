@@ -19,9 +19,8 @@ use Stripe\Product;
 use Stripe\Subscription;
 
 class StripePaymentController extends Controller
-
 {
-
+    
     /**
 
      * success response method.
@@ -39,7 +38,7 @@ class StripePaymentController extends Controller
         return view('pages.stripe');
     }
 
-
+    
 
     /**
 
@@ -83,43 +82,74 @@ class StripePaymentController extends Controller
                 'product' => $product->id,
             ]);
 
-            // Durations from user's requested dates
+            // Window & dates
+            $startDate = Carbon::parse($request->start_date)->startOfDay();
             $days   = Carbon::parse($request->cancellation)->diffInDays($request->start_date);
             $weeks  = Carbon::parse($request->cancellation)->diffInWeeks($request->start_date);
             $months = Carbon::parse($request->cancellation)->diffInMonths($request->start_date);
 
-            // Requested start (keep for display/storage)
-            $startDate = Carbon::parse($request->start_date)->startOfDay();
+            $startIsFuture  = $startDate->isFuture();
+            $forceChargeNow = (bool) $request->boolean('charge_now');
 
-            // Actual anchor Stripe will use
-            $billingAnchor = $startDate->isPast()
-                ? Carbon::now()->addMinutes(2)->timestamp
-                : $startDate->timestamp;
+            // Anchor ONLY for our own endDate math (Stripe ko na bhejein in immediate path)
+            $anchor = $forceChargeNow || !$startIsFuture ? Carbon::now() : $startDate->copy();
 
-            // Use the *actual* anchor time-of-day, NO startOfDay() here
-            $anchorCarbon = Carbon::createFromTimestamp($billingAnchor);
+            $iterationsDay   = $days + 1;
+            $iterationsWeek  = $weeks + 1;
+            $iterationsMonth = max(1, ($months ?: 0) + 1);
 
-            // Inclusive iterations (e.g., 4→10 has 7 daily charges)
-            $dayIterations   = $days + 1;
-            $weekIterations  = $weeks + 1;
-            $monthIterations = max(1, ($months ?: 0) + 1);
-
-            // Compute the next boundary at the same time-of-day as the anchor
             $endDate = match ($request->type) {
-                'day'   => $anchorCarbon->copy()->addDays($dayIterations),
-                'week'  => $anchorCarbon->copy()->addWeeks($weekIterations),
-                default => $anchorCarbon->copy()->addMonthsNoOverflow($monthIterations),
+                'day'   => $anchor->copy()->addDays($iterationsDay),
+                'week'  => $anchor->copy()->addWeeks($iterationsWeek),
+                default => $anchor->copy()->addMonthsNoOverflow($iterationsMonth),
             };
 
-            $subscription = \Stripe\Subscription::create([
-                'customer' => $customer->id,
-                'items' => [['price' => $price->id]],
-                'billing_cycle_anchor' => $billingAnchor,
-                'cancel_at' => $endDate->timestamp,   // cancels at next boundary → full final day charged
-                'proration_behavior' => 'none',
-                'expand' => ['latest_invoice.payment_intent'],
-            ]);
+            if ($forceChargeNow || !$startIsFuture) {
+                // ===== IMMEDIATE-CHARGE PATH =====
+                // IMPORTANT: Do NOT send billing_cycle_anchor (Stripe will start "now")
+                $subscription = Stripe\Subscription::create([
+                    'customer'           => $customer->id,
+                    'items'              => [['price' => $price->id]],
+                    'cancel_at'          => $endDate->timestamp,
+                    'proration_behavior' => 'none',
+                    'collection_method'  => 'charge_automatically',
+                    'payment_behavior'   => 'allow_incomplete', // we'll finalize+pay below
+                    'expand'             => ['latest_invoice'],
+                ]);
 
+                // Always fetch invoice by ID
+                $latest   = $subscription->latest_invoice;
+                $latestId = is_string($latest) ? $latest : ($latest->id ?? null);
+                if (!$latestId) {
+                    throw new \Exception('Latest invoice ID not found on subscription (immediate charge path).');
+                }
+                $invoice = Stripe\Invoice::retrieve($latestId);
+
+                // Finalize if draft
+                if ($invoice->status === 'draft') {
+                    $invoice = $invoice->finalizeInvoice(); // instance method
+                }
+
+                // Pay now if not paid yet
+                if ($invoice->collection_method === 'charge_automatically' && $invoice->status !== 'paid') {
+                    $invoice = $invoice->pay(); // instance method
+                }
+
+            } else {
+                // ===== FUTURE START / TRIAL PATH =====
+                // No invoice yet; it will be created at trial_end
+                $subscription = Stripe\Subscription::create([
+                    'customer'           => $customer->id,
+                    'items'              => [['price' => $price->id]],
+                    'trial_end'          => $startDate->timestamp,   // start & bill on this date
+                    'cancel_at'          => $endDate->timestamp,
+                    'proration_behavior' => 'none',
+                    'collection_method'  => 'charge_automatically',
+                    'payment_behavior'   => 'allow_incomplete',
+                ]);
+            }
+
+            // Save local record
             auth()->user()->subscriptions()->create([
                 'stripe_subscription_id' => $subscription->id,
                 'stripe_price_id' => $price->id,
@@ -128,16 +158,23 @@ class StripePaymentController extends Controller
                 'currency' => $request->currency,
                 'type' => $request->type,
                 'start_date' => Carbon::createFromTimestamp($subscription->current_period_start),
-                'end_date'   => $endDate->copy()->subSecond(),  // last moment before Stripe cancels
+                'end_date'   => $endDate->copy()->subSecond(),
                 'canceled_at' => $endDate,
-
             ]);
             DB::commit();
 
-            return redirect()->route('dashboard')->with('success', 'Donation successful! Your invoice and transaction are generated within just 5 minutes due to high traffic.');
+            $msg = $forceChargeNow || !$startIsFuture
+                ? 'Donation successful! Invoice finalized & paid immediately.'
+                : 'Subscription scheduled. Billing will start on your selected start date.';
+
+            return redirect()->route('dashboard')->with('success', $msg);
+
+        } catch (\Stripe\Exception\CardException $e) {
+            DB::rollBack();
+            return back()->withInput()->with('error', 'Stripe card error: ' . $e->getMessage());
         } catch (\Exception $e) {
             DB::rollBack();
-            return redirect()->back()->withInput()->with('error', 'Error: ' . $e->getMessage());
+            return back()->withInput()->with('error', 'Error: ' . $e->getMessage());
         }
     }
 }
